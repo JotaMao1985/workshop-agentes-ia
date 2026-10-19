@@ -1,6 +1,6 @@
 // Generado por scripts/genera_sw.mjs. No editar a mano.
-const CACHE = 'taller-agentes-c09123a658be';
-const ARCHIVOS = ["./","./assets/index-BOhuDwiN.js","./assets/index-DPMuolws.css","./assets/montserrat-latin-400-normal-CIMKXMQI.woff2","./assets/montserrat-latin-400-normal-Sf4eHQyG.woff","./assets/montserrat-latin-600-normal-CjtsKS3e.woff2","./assets/montserrat-latin-600-normal-CoQZtLyZ.woff","./assets/montserrat-latin-700-normal-BYRy5CoC.woff2","./assets/montserrat-latin-700-normal-DHOpyQza.woff","./assets/montserrat-latin-800-normal-Cp9CdP19.woff2","./assets/montserrat-latin-800-normal-CwdtYla9.woff","./icono.svg","./index.html"];
+const CACHE = 'taller-agentes-5cf3b686cb68';
+const ARCHIVOS = ["./","./assets/index-DPMuolws.css","./assets/index-zgnf7Axq.js","./assets/montserrat-latin-400-normal-CIMKXMQI.woff2","./assets/montserrat-latin-400-normal-Sf4eHQyG.woff","./assets/montserrat-latin-600-normal-CjtsKS3e.woff2","./assets/montserrat-latin-600-normal-CoQZtLyZ.woff","./assets/montserrat-latin-700-normal-BYRy5CoC.woff2","./assets/montserrat-latin-700-normal-DHOpyQza.woff","./assets/montserrat-latin-800-normal-Cp9CdP19.woff2","./assets/montserrat-latin-800-normal-CwdtYla9.woff","./icono.svg","./index.html"];
 self.addEventListener('install', e => {
   e.waitUntil(caches.open(CACHE).then(c => c.addAll(ARCHIVOS)).then(() => self.skipWaiting()));
 });

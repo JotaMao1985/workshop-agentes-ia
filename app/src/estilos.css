@@ -16,11 +16,12 @@
   --error-fondo: #FDECEA;
   --aviso: #8A5A00;
   --aviso-fondo: #FFF4D6;
-  --b-orquestador: #1A8A63;
-  --b-llm: #2563EB;
-  --b-herramientas: #D9590B;
-  --b-memoria: #A16207;
-  --b-control: #B42318;
+  /* Bloques: el mismo código de colores del kit impreso y las diapositivas (borde); etiqueta en un tono legible. */
+  --b-orquestador: #012820; --bt-orquestador: #012820;
+  --b-llm: #FF6600; --bt-llm: #B34700;
+  --b-herramientas: #FFC24B; --bt-herramientas: #7A5000;
+  --b-memoria: #1A8A63; --bt-memoria: #0E6B4A;
+  --b-control: #2F4858; --bt-control: #2F4858;
   --radio: 14px;
   --sombra: 0 1px 2px rgb(1 40 32 / 6%), 0 4px 14px rgb(1 40 32 / 6%);
   color-scheme: light;
@@ -29,14 +30,14 @@
   :root:not([data-theme="light"]) {
     --fondo: #08130F; --superficie: #0F1F19; --superficie-2: #16291F; --tinta: #E8F1EC; --tinta-2: #B9CAC2; --tinta-3: #8FA39A;
     --borde: #27413A; --naranja-texto: #FF9A57; --exito: #4ADE80; --exito-fondo: #12301F; --error: #FF8A80; --error-fondo: #3A1512;
-    --aviso: #FCD34D; --aviso-fondo: #33270A; --b-orquestador: #4ADE9F; --b-llm: #7AA7FF; --b-herramientas: #FF9A57; --b-memoria: #F2C14E; --b-control: #FF8A80;
+    --aviso: #FCD34D; --aviso-fondo: #33270A; --b-orquestador: #A9C4B8; --bt-orquestador: #C9DDD4; --b-llm: #FF7A26; --bt-llm: #FF9A57; --b-herramientas: #FFC24B; --bt-herramientas: #FFD27A; --b-memoria: #3CC48E; --bt-memoria: #62D6A6; --b-control: #8FA9BC; --bt-control: #B3C7D6;
     --sombra: none; color-scheme: dark;
   }
 }
 :root[data-theme="dark"] {
   --fondo: #08130F; --superficie: #0F1F19; --superficie-2: #16291F; --tinta: #E8F1EC; --tinta-2: #B9CAC2; --tinta-3: #8FA39A;
   --borde: #27413A; --naranja-texto: #FF9A57; --exito: #4ADE80; --exito-fondo: #12301F; --error: #FF8A80; --error-fondo: #3A1512;
-  --aviso: #FCD34D; --aviso-fondo: #33270A; --b-orquestador: #4ADE9F; --b-llm: #7AA7FF; --b-herramientas: #FF9A57; --b-memoria: #F2C14E; --b-control: #FF8A80;
+  --aviso: #FCD34D; --aviso-fondo: #33270A; --b-orquestador: #A9C4B8; --bt-orquestador: #C9DDD4; --b-llm: #FF7A26; --bt-llm: #FF9A57; --b-herramientas: #FFC24B; --bt-herramientas: #FFD27A; --b-memoria: #3CC48E; --bt-memoria: #62D6A6; --b-control: #8FA9BC; --bt-control: #B3C7D6;
   --sombra: none; color-scheme: dark;
 }
 
@@ -137,11 +138,11 @@ input:focus-visible, select:focus-visible, textarea:focus-visible, button:focus-
 .traza li[data-e="error"] { background: var(--error-fondo); }
 .traza li > span { min-width: 0; overflow-wrap: anywhere; }
 .traza .bloque { font-weight: 800; font-size: .75rem; text-transform: uppercase; letter-spacing: .04em; }
-.traza li[data-b="orquestador"] .bloque { color: var(--b-orquestador); }
-.traza li[data-b="llm"] .bloque { color: var(--b-llm); }
-.traza li[data-b="herramientas"] .bloque { color: var(--b-herramientas); }
-.traza li[data-b="memoria"] .bloque { color: var(--b-memoria); }
-.traza li[data-b="control"] .bloque { color: var(--b-control); }
+.traza li[data-b="orquestador"] .bloque { color: var(--bt-orquestador); }
+.traza li[data-b="llm"] .bloque { color: var(--bt-llm); }
+.traza li[data-b="herramientas"] .bloque { color: var(--bt-herramientas); }
+.traza li[data-b="memoria"] .bloque { color: var(--bt-memoria); }
+.traza li[data-b="control"] .bloque { color: var(--bt-control); }
 .traza.animada li { animation: aparecer .35s ease both; }
 @keyframes aparecer { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: none; } }
 @media (prefers-reduced-motion: reduce) { .traza.animada li { animation: none; } }

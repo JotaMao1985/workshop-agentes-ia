@@ -19,7 +19,10 @@ export const CONTROL_CASO = [
   ['aclaracion', 'Pidió aclaración'], ['fuentes', 'Verificó que las fuentes fueran reales'], ['nada', 'No intervino'],
 ];
 export const ROLES = [['llm', 'LLM'], ['orquestador', 'Orquestador'], ['herramientas', 'Herramientas'], ['memoria', 'Memoria'], ['control', 'Control']];
-export const LIM_REG = { equipo: 30, i: 120, f: 16, cn: 100, im: 200, r: 280 };
+// f: hasta 24 pasos en el flujo (el ciclo con dos o tres vueltas por el bucle). Con texto real y todos los
+// campos al límite, el QR de II.A queda por debajo de 800 bytes (scripts/medir_qr2.mjs); con letras al azar
+// pasa de 800 y «Entregar» avisa (scripts/medir_qr.mjs).
+export const LIM_REG = { equipo: 30, i: 120, f: 24, cn: 100, im: 200, r: 280 };
 
 const codigos = lista => lista.map(x => x[0]);
 

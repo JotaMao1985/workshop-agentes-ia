@@ -1,6 +1,6 @@
-# Workshop · Agentes de IA — app del mock
+# Workshop «Agentes de IA» — app del mock
 
-App web del **workshop «Agentes de IA»** (Universidad El Bosque, 20 de octubre de 2026). Simula un agente **sin LLM real, sin créditos y sin llaves de API**: el «LLM» es un conjunto de reglas, las herramientas están simuladas y todo corre en el navegador.
+App web del **Workshop «Agentes de IA»** (Universidad El Bosque, 20 de octubre de 2026). Simula un agente **sin LLM real, sin créditos y sin claves de API**: el «LLM» es un conjunto de reglas, las herramientas están simuladas y todo corre en el navegador.
 
 **Abrir la app:** https://jotamao1985.github.io/workshop-agentes-ia/
 
@@ -10,7 +10,24 @@ Un agente se organiza en 5 bloques: **LLM** (interpreta y propone; no ejecuta), 
 
 > Usuario → Orquestador → Memoria (leer) → LLM decide → Control (antes) → Herramienta → Observación ↺ → LLM redacta → Control (después) → Respuesta → Memoria (escribir) → Traza
 >
-> Si no hace falta ninguna herramienta, del «LLM decide» se pasa directo a «LLM redacta».
+> Si no hace falta ninguna herramienta, de «LLM decide» se pasa directo a «LLM redacta».
+
+### Confirmación en dos turnos: la Memoria lleva el estado
+
+Cuando Control (antes) bloquea una acción porque falta autorización («Pedir autorización explícita» en el envío de correos) o confirmación (el hook propio «Pedir confirmación antes de usar…»), la acción no se pierde: la Memoria guarda en la memoria de la sesión el **estado**, una acción pendiente con su herramienta y sus argumentos.
+
+| Turno | Mensaje | Qué pasa |
+|---|---|---|
+| 1 | «Envía el plan a grupo.redes@ejemplo.edu» | Control (antes) bloquea: falta autorización. Memoria (escribir): *Guarda el estado: envío pendiente de autorización (grupo.redes@ejemplo.edu).* |
+| 2 | «Sí, confirmo» | Memoria (leer): *Lee el estado: hay un envío pendiente…* → el LLM interpreta «confirmar la acción pendiente» → Control (antes): *autorización explícita recibida en este turno* → la herramienta se ejecuta con los argumentos guardados → *Listo: envié … (envío simulado).* → Memoria (escribir): *Borra el estado.* |
+
+- Cuenta como confirmación un mensaje que solo confirma, sin otra acción ni otro destino: «sí», «sí, confirmo», «confirmo», «autorizo», «dale», «de acuerdo», «adelante», «hazlo», «ok», «claro», «envíalo»… (la lista está en `datos/lexico.json`, en `confirmacion` y `relleno_confirmacion`).
+- Una negación («no», «cancela», «mejor no», «no lo envíes»…) borra el estado y el agente responde «Entendido: no lo envío.».
+- Cualquier otro mensaje descarta el estado (la traza lo dice) y se procesa normal.
+- Con «Bloquear siempre» no queda nada pendiente: el bloqueo es definitivo. El bloqueo de acciones peligrosas sigue aplicando siempre, y los demás controles (argumentos supuestos, hooks propios) se revisan otra vez al confirmar.
+- Las baterías de escenarios corren cada mensaje con la memoria de sesión vacía, así que el estado no cambia el puntaje. En «Probar», en cambio, la memoria de la sesión pasa de un mensaje al siguiente hasta que se toca «Limpiar».
+
+Es lo que enseña el Reto 5: un agente que «te pidió permiso tres veces porque no sabía que ya se lo habías dado» no tiene estado en su memoria.
 
 En la app cada equipo, desde el celular:
 
@@ -19,7 +36,7 @@ En la app cada equipo, desde el celular:
 3. lo prueba en un chat y corre 7 escenarios comunes;
 4. entrega su registro y su agente con un QR.
 
-El **agente base** viene incompleto a propósito: envía correos sin permiso, inventa fuentes y supone datos que nadie le dio. Arreglarlo es parte del taller. La evaluación final usa frases distintas a las de práctica para premiar agentes que generalizan y no los que memorizan frases.
+El **agente base** viene incompleto a propósito: envía correos sin permiso, inventa fuentes y supone datos que nadie le dio. Arreglarlo es parte del taller. La evaluación final usa frases distintas de las de práctica para premiar agentes que generalizan y no los que memorizan frases.
 
 Todo se guarda solo en el navegador de quien la usa; la app no tiene servidor ni recoge datos personales.
 
@@ -55,7 +72,7 @@ Prueba a cambiar `datos/lexico.json`, agregar una herramienta en `tools.py` o un
 
 ## Paridad entre la app y Python
 
-La app (JavaScript) y el mock (Python) son dos implementaciones del mismo agente. `pruebas/paridad/` corre más de 200 configuraciones y 52 mensajes en las dos y compara traza, respuesta y puntaje, una por una:
+La app (JavaScript) y el mock (Python) son dos implementaciones del mismo agente. `pruebas/paridad/` corre más de 200 configuraciones y 52 mensajes en las dos y compara traza, respuesta y puntaje, una por una. Además corre las secuencias de `secuencias.json` (varios mensajes seguidos con la memoria de sesión compartida, como la confirmación en dos turnos) sobre esas configuraciones y sobre las de `configs_secuencias.json`, y compara el resultado completo de cada turno:
 
 ```bash
 cd app && npm ci

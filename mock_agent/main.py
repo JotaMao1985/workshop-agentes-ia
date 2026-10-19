@@ -1,4 +1,4 @@
-"""Mock local de un agente de IA, sin LLM real, sin créditos y sin llaves de API.
+"""Mock local de un agente de IA, sin LLM real, sin créditos y sin claves de API.
 
 Uso:
     python main.py                         # conversa con el agente base

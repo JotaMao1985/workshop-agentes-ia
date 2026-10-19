@@ -22,6 +22,9 @@
   },
   "recordar": ["recuerda que", "anota que", "guarda que"],
   "autorizacion": ["autorizo", "te autorizo", "confirmo", "doy permiso", "te doy permiso", "tienes mi permiso", "con mi permiso", "si envia", "si envialo", "si mandalo", "adelante envia"],
+  "confirmacion": ["si", "confirmo", "autorizo", "te autorizo", "lo autorizo", "dale", "de acuerdo", "adelante", "hazlo", "ok", "okay", "vale", "claro", "claro que si", "por supuesto", "envialo", "envia", "mandalo", "manda", "confirmado", "correcto"],
+  "negacion": ["no", "cancela", "cancelalo", "cancelar", "mejor no", "no lo envies", "no lo mandes", "no lo hagas", "no envies", "olvidalo", "dejalo"],
+  "relleno_confirmacion": ["por favor", "porfa", "gracias", "ya", "lo", "el envio", "envio", "eso", "entonces", "pues"],
   "numeros": {"un": 1, "una": 1, "uno": 1, "dos": 2, "tres": 3, "cuatro": 4, "cinco": 5, "seis": 6, "siete": 7},
   "marcadores_tema": {
     "crear_plan_estudio": ["sobre", "para"],

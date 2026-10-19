@@ -11,7 +11,7 @@ export default function IIB({ equipos, revelar, setRevelar }) {
     <>
       <section className="tarjeta">
         <h2>II.B · Evaluación con las variantes</h2>
-        <p>Cada agente se vuelve a correr aquí con <b>frases distintas</b> a las de práctica, que prueban la misma propiedad. ¿Tu agente memorizó frases o generaliza?</p>
+        <p>Cada agente se vuelve a correr aquí con <b>frases distintas</b> de las de práctica, que prueban la misma propiedad. ¿Su agente memorizó frases o generalizó?</p>
         <button className="boton naranja" onClick={() => setRevelar(!revelar)}>{revelar ? 'Ocultar las variantes' : 'Revelar las variantes'}</button>
         {revelar ? (
           <ol style={{ marginTop: 12 }}>

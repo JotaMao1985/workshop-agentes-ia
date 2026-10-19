@@ -26,7 +26,7 @@ export default function Podio({ equipos }) {
         <button className="boton naranja" onClick={() => setPaso(Math.min(3, paso + 1))} disabled={paso >= 3}>{paso === 0 ? 'Revelar 3.º' : paso === 1 ? 'Revelar 2.º' : 'Revelar 1.º'}</button>
         <button className="boton secundario" onClick={() => setPaso(0)}>Ocultar</button>
       </div>
-      <p className="nota" style={{ textAlign: 'center', marginTop: 16 }}>La inteligencia aparente de un agente no está solo en el modelo: está en la interacción entre modelo, herramientas, memoria, validaciones, estado, trazas y diseño del flujo.</p>
+      <p className="nota" style={{ textAlign: 'center', marginTop: 16 }}>La inteligencia aparente de un agente no está solo en el modelo. Está en la interacción entre modelo, herramientas, memoria, validaciones, estado, trazas y diseño del flujo.</p>
     </section>
   );
 }

@@ -26,7 +26,7 @@ export default function Equipo({ equipo, setEquipo, ir }) {
         <ul>
           {BLOQUES.map(([b, d]) => <li key={b}><b>{b}:</b> {d}</li>)}
         </ul>
-        <p className="nota">El ciclo: Usuario → Orquestador → Memoria (leer) → LLM decide → Control (antes) → Herramienta → Observación ↺ → LLM redacta → Control (después) → Respuesta → Memoria (escribir) → Traza. Si no hace falta ninguna herramienta, del «LLM decide» se pasa directo a «LLM redacta».</p>
+        <p className="nota">El ciclo: Usuario → Orquestador → Memoria (leer) → LLM decide → Control (antes) → Herramienta → Observación ↺ → LLM redacta → Control (después) → Respuesta → Memoria (escribir) → Traza. Si no hace falta ninguna herramienta, de «LLM decide» se pasa directo a «LLM redacta».</p>
       </section>
       <section className="tarjeta">
         <h2>Puntaje del día</h2>

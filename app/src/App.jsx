@@ -29,7 +29,7 @@ export default function App() {
   if (ruta.startsWith('proyector')) {
     return (
       <div className="proyector">
-        <header className="cabecera"><div className="cabecera-fila"><span className="marca">Taller de agentes · <span>el agente base</span></span><a href="#/facilitador" style={{ color: '#fff', fontSize: '.8rem' }}>Volver</a></div></header>
+        <header className="cabecera"><div className="cabecera-fila"><span className="marca">Workshop «Agentes de IA» · <span>el agente base</span></span><a href="#/facilitador" style={{ color: '#fff', fontSize: '.8rem' }}>Volver</a></div></header>
         <main><Probar config={configBase()} titulo="El agente base (viene incompleto a propósito)" grande /></main>
       </div>
     );
@@ -40,7 +40,7 @@ export default function App() {
     <>
       <header className="cabecera">
         <div className="cabecera-fila">
-          <span className="marca">Taller de <span>agentes de IA</span></span>
+          <span className="marca">Workshop <span>«Agentes de IA»</span></span>
           {equipo.trim() ? <span className="chip-equipo" title={equipo}>{equipo}</span> : null}
         </div>
         <nav className="pestanas" role="tablist" aria-label="Secciones">
@@ -54,7 +54,7 @@ export default function App() {
         {pestana === 'probar' ? <Probar config={config} /> : null}
         {pestana === 'escenarios' ? <Escenarios config={config} /> : null}
         {pestana === 'entregar' ? <Entregar equipo={equipo} config={config} registro={registro} /> : null}
-        <p className="pie">Workshop · Agentes de IA · Universidad El Bosque · martes 20 de octubre de 2026<br />Todo se guarda solo en este celular. <a href="#/facilitador">Facilitador</a></p>
+        <p className="pie">Workshop «Agentes de IA» · Universidad El Bosque · martes 20 de octubre de 2026<br />Todo se guarda solo en este celular. <a href="#/facilitador">Facilitador</a></p>
       </main>
     </>
   );

@@ -78,7 +78,7 @@ export default function MiAgente({ config, setConfig }) {
         <p className="nota">Una herramienta nueva hecha a partir de otra: nombre propio y palabras que la activan.</p>
         <div className="rejilla-2">
           <div>
-            <Texto etiqueta="Nombre (minúsculas y _ )" valor={ad.n} alCambiar={v => setAd('n', v.toLowerCase().replace(/[^a-z0-9_]/g, '_'))} max={LIMITES.adaptadaNombre} placeholder="Ej.: buscar_video" />
+            <Texto etiqueta="Nombre (minúsculas y _)" valor={ad.n} alCambiar={v => setAd('n', v.toLowerCase().replace(/[^a-z0-9_]/g, '_'))} max={LIMITES.adaptadaNombre} placeholder="Ej.: buscar_video" />
             {ad.n && !nombreAdaptadaValido(ad.n) ? <small className="nota" style={{ color: 'var(--error)' }}>Usa de 3 a 24 caracteres, empieza por letra y no repitas un nombre existente.</small> : null}
           </div>
           <Lista etiqueta="Basada en" valor={ad.b} alCambiar={v => setAd('b', v)} opciones={HERRAMIENTAS.map(h => [h[0], h[0]])} />

@@ -30,3 +30,25 @@ for (let i = 0; i < 220; i++) {
 }
 writeFileSync(new URL('./configs.json', import.meta.url), JSON.stringify(out));
 console.log('configs:', out.length);
+
+// Configuraciones dirigidas para las secuencias (confirmación en dos turnos). Se suman a las de arriba.
+const ej = cambios => ({ ...JSON.parse(JSON.stringify(ejemplo)), ...cambios });
+const ctrl = c => ({ ...ejemplo.control, ...c });
+const dirigidas = [
+  ej({}),
+  ej({ control: ctrl({ envio: 'siempre_bloquear' }) }),
+  ej({ control: ctrl({ envio: 'apagado' }) }),
+  ej({ hooks: [{ k: 'confirmar', v: 'crear_plan_estudio' }] }),
+  ej({ hooks: [{ k: 'confirmar', v: 'calculadora' }, { k: 'confirmar', v: 'enviar_correo' }] }),
+  ej({ hooks: [{ k: 'confirmar', v: 'enviar_correo' }], control: ctrl({ envio: 'siempre_bloquear' }) }),
+  ej({ hooks: [], control: ctrl({ peligrosas: false }) }),
+  ej({ control: ctrl({ args: false }), memoria: [] }),
+  ej({ memoria: [...ejemplo.memoria, { t: 'correo_grupo', v: 'grupo.redes@ejemplo.edu' }] }),
+  { ...base, control: { ...base.control, envio: 'pedir' } },
+  { ...base, control: { ...base.control, envio: 'pedir' }, hooks: [{ k: 'confirmar', v: 'buscar_recurso' }] },
+  ej({ hooks: [{ k: 'confirmar', v: 'buscar_video' }, { k: 'confirmar', v: 'consultar_calendario' }] }),
+  ej({ reglas: [{ p: 'dale', a: 'responder' }], hooks: [{ k: 'confirmar', v: 'calculadora' }] }),
+  ej({ hooks: [{ k: 'contiene', v: 'confirmo, claro' }, { k: 'confirmar', v: 'evaluar_entrega' }] }),
+];
+writeFileSync(new URL('./configs_secuencias.json', import.meta.url), JSON.stringify(dirigidas));
+console.log('configs dirigidas para las secuencias:', dirigidas.length);

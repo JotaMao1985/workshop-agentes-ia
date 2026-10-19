@@ -2,12 +2,13 @@ import { describe, it, expect } from 'vitest';
 import base from '../../../../datos/config_base.json';
 import ejemplo from '../../../../datos/config_ejemplo_completo.json';
 import escenarios from '../../../../datos/escenarios.json';
-import { ejecutar } from '../agente.js';
+import { ejecutar, esConfirmacion, esNegacion, leerPendiente } from '../agente.js';
+import { normalizar, minusculaInicial } from '../texto.js';
 import { correrBateria, personalizacion, puntajeIIB } from '../puntaje.js';
 import { sanearConfig } from '../config.js';
 import { calcular, extraerExpresion } from '../calculadora.js';
 import { codificar, decodificar, codigoCorto, leerCodigoCorto, bytesCarga } from '../codigo.js';
-import { sanearRegistro } from '../registro.js';
+import { sanearRegistro, LIM_REG } from '../registro.js';
 
 const con = (cambios) => ({ ...JSON.parse(JSON.stringify(ejemplo)), ...cambios });
 const pasan = (cfg, conj) => correrBateria(cfg, conj).propiedades.filter(p => p.pasa).map(p => p.id);
@@ -145,5 +146,177 @@ describe('nombres de equipo hostiles en el modo facilitador', () => {
     expect(e[0].rubrica[0]).toBe(5);
     expect(e[0].iibManual).toBe(40);
     expect(e[0].config).toBeNull();
+  });
+});
+
+const ENVIO = 'Envía el plan a grupo.redes@ejemplo.edu';
+const textosDe = r => r.traza.map(x => x.t);
+// Varios mensajes seguidos con la memoria de sesión compartida, como en «Probar».
+const turnos = (cfg, mensajes, mem = []) => mensajes.map(m => { const r = ejecutar(cfg, m, mem); mem = r.memoriaSesion; return r; });
+const ESTADO_ENVIO = {
+  t: 'estado', v: 'envío pendiente de autorización (grupo.redes@ejemplo.edu)', por: 'envio', h: 'enviar_correo',
+  a: { destino: 'grupo.redes@ejemplo.edu', contenido: 'el texto de esta conversación' }, p: { destino: 'mensaje', contenido: 'defecto' },
+};
+
+describe('confirmación en dos turnos (la Memoria lleva el estado)', () => {
+  it('sin estado, «Sí, confirmo» no envía nada', () => {
+    const r = ejecutar(ejemplo, 'Sí, confirmo');
+    expect(r.ejecutadas).toHaveLength(0);
+    expect(r.memoriaSesion).toEqual([]);
+  });
+  it('envío → «Sí, confirmo»: guarda el estado, lo lee, envía y lo borra', () => {
+    const [r1, r2] = turnos(ejemplo, [ENVIO, 'Sí, confirmo']);
+    expect(r1.bloqueadoPor).toBe('envio');
+    expect(r1.ejecutadas).toHaveLength(0);
+    expect(r1.respuesta).toBe('Antes de enviar necesito tu autorización explícita. ¿Confirmas que lo envíe a grupo.redes@ejemplo.edu?');
+    expect(r1.traza.at(-2)).toEqual({ b: 'memoria', t: 'Guarda el estado: envío pendiente de autorización (grupo.redes@ejemplo.edu).', e: 'ok' });
+    expect(r1.memoriaSesion).toEqual([ESTADO_ENVIO]);
+    expect(r2.traza.map(x => x.b + ' · ' + x.t)).toEqual([
+      'orquestador · Recibe el mensaje y arranca el ciclo.',
+      'memoria · Lee la memoria: 3 entrada(s).',
+      'memoria · Lee el estado: hay un envío pendiente de autorización (grupo.redes@ejemplo.edu).',
+      'llm · Interpreta la intención: confirmar la acción pendiente.',
+      'llm · Propone usar enviar_correo(destino=grupo.redes@ejemplo.edu, contenido=el texto de esta conversación).',
+      'control · Revisa antes de actuar: autorización explícita recibida en este turno.',
+      'herramientas · Ejecuta enviar_correo: correo enviado a grupo.redes@ejemplo.edu (simulado)',
+      'orquestador · Observación recibida. ¿Hace falta otra acción? No: a redactar.',
+      'llm · Redacta la respuesta.',
+      'control · Evaluador: la respuesta no inventa fuentes.',
+      'memoria · Borra el estado: la acción pendiente ya se ejecutó.',
+      'control · Traza completa: 12 pasos.',
+    ]);
+    expect(r2.respuesta).toBe('Listo: envié el texto de esta conversación a grupo.redes@ejemplo.edu (envío simulado).');
+    expect(r2.ejecutadas).toEqual([{ nombre: 'enviar_correo', base: 'enviar_correo', args: ESTADO_ENVIO.a, proc: ESTADO_ENVIO.p, ok: true }]);
+    expect(r2.intencion).toBe('confirmar');
+    expect(r2.memoriaSesion).toEqual([]);
+  });
+  it('con memoria vacía no dice «está vacía» si hay un estado', () => {
+    const cfg = { ...base, control: { ...base.control, envio: 'pedir' } };
+    const [, r2] = turnos(cfg, [ENVIO, 'sí']);
+    expect(textosDe(r2).slice(0, 2)).toEqual(['Recibe el mensaje y arranca el ciclo.', 'Lee el estado: hay un envío pendiente de autorización (grupo.redes@ejemplo.edu).']);
+    expect(r2.ejecutadas).toHaveLength(1);
+  });
+  it('envío → «no»: borra el estado y no envía', () => {
+    const [, r2, r3] = turnos(ejemplo, [ENVIO, 'no', 'sí']);
+    expect(r2.respuesta).toBe('Entendido: no lo envío.');
+    expect(r2.intencion).toBe('cancelar');
+    expect(textosDe(r2)).toContain('Borra el estado: la acción pendiente se canceló.');
+    expect(r2.memoriaSesion).toEqual([]);
+    expect(r3.ejecutadas).toHaveLength(0);
+    for (const m of ['cancela', 'mejor no', 'No, no lo envíes']) expect(turnos(ejemplo, [ENVIO, m])[1].respuesta).toBe('Entendido: no lo envío.');
+  });
+  it('envío → otro tema: descarta el estado (la traza lo dice) y procesa el mensaje normal', () => {
+    const [, r2, r3] = turnos(ejemplo, [ENVIO, '¿Qué es un token?', 'Sí, confirmo']);
+    expect(textosDe(r2)[2]).toBe('Lee el estado: hay un envío pendiente de autorización (grupo.redes@ejemplo.edu), pero este mensaje no lo confirma: lo descarta.');
+    expect(r2.respuesta).toBe(ejecutar(ejemplo, '¿Qué es un token?').respuesta);
+    expect(r2.memoriaSesion).toEqual([]);
+    expect(r3.ejecutadas).toHaveLength(0);
+  });
+  it('un nuevo envío reemplaza el estado y «Sí, envíalo a otro» no es una confirmación pura', () => {
+    const [, r2, r3] = turnos(ejemplo, [ENVIO, 'Envía el resumen a camila@ejemplo.edu', 'ok']);
+    expect(r2.memoriaSesion).toHaveLength(1);
+    expect(r3.ejecutadas[0].args.destino).toBe('camila@ejemplo.edu');
+    const [, otro] = turnos(ejemplo, [ENVIO, 'Sí, envíalo a camila@ejemplo.edu']);
+    expect(textosDe(otro)).toContain('Lee el estado: hay un envío pendiente de autorización (grupo.redes@ejemplo.edu), pero este mensaje no lo confirma: lo descarta.');
+    expect(otro.ejecutadas[0].args.destino).toBe('camila@ejemplo.edu');
+  });
+  it('lo que se pidió recordar convive con el estado', () => {
+    const [r1, r2] = turnos(ejemplo, ['Recuerda que prefiero lecturas cortas', ENVIO]);
+    expect(r2.memoriaSesion).toEqual([r1.memoriaEscrita[0], ESTADO_ENVIO]);
+    expect(textosDe(r2)[1]).toBe('Lee la memoria: 4 entrada(s).');
+  });
+  it('hook «Pedir confirmación antes de usar…» → «sí» ejecuta la herramienta con los argumentos guardados', () => {
+    const cfg = con({ hooks: [{ k: 'confirmar', v: 'crear_plan_estudio' }] });
+    const [r1, r2] = turnos(cfg, ['Hazme un plan de estudio de dos días, una hora por día, sobre redes neuronales', 'sí']);
+    expect(r1.bloqueadoPor).toBe('confirmar');
+    expect(textosDe(r1)).toContain('Guarda el estado: uso de crear_plan_estudio pendiente de confirmación.');
+    expect(textosDe(r2)).toContain('Lee el estado: hay un uso de crear_plan_estudio pendiente de confirmación.');
+    expect(r2.ejecutadas).toHaveLength(1);
+    expect(r2.ejecutadas[0]).toMatchObject({ base: 'crear_plan_estudio', ok: true, args: { tema: 'redes neuronales', dias: '2', horas: '1' } });
+    expect(r2.memoriaSesion).toEqual([]);
+    const [, no] = turnos(cfg, ['Hazme un plan de estudio de dos días, una hora por día, sobre redes neuronales', 'no']);
+    expect(no.respuesta).toBe('Entendido: no lo hago.');
+  });
+  it('«Bloquear siempre» no deja nada pendiente', () => {
+    const cfg = con({ control: { ...ejemplo.control, envio: 'siempre_bloquear' } });
+    const [r1, r2] = turnos(cfg, [ENVIO, 'sí']);
+    expect(r1.bloqueadoPor).toBe('envio_siempre');
+    expect(r1.memoriaSesion).toEqual([]);
+    expect(textosDe(r1)).not.toContain('Guarda el estado: envío pendiente de autorización (grupo.redes@ejemplo.edu).');
+    expect(r2.ejecutadas).toHaveLength(0);
+  });
+  it('confirmar no salta un «Bloquear siempre» que estaba detrás del hook de confirmación', () => {
+    const cfg = con({ hooks: [{ k: 'confirmar', v: 'enviar_correo' }], control: { ...ejemplo.control, envio: 'siempre_bloquear' } });
+    const [r1, r2] = turnos(cfg, [ENVIO, 'Sí, confirmo']);
+    expect(r1.bloqueadoPor).toBe('confirmar');
+    expect(r2.bloqueadoPor).toBe('envio_siempre');
+    expect(r2.ejecutadas).toHaveLength(0);
+    expect(textosDe(r2)).toContain('Borra el estado: la acción pendiente no pasó el control.');
+    expect(r2.memoriaSesion).toEqual([]);
+  });
+  it('un envío peligroso seguido de «sí» no envía nada', () => {
+    for (const peligrosas of [true, false]) {
+      const cfg = con({ hooks: [], control: { ...ejemplo.control, peligrosas } });
+      const [r1, r2] = turnos(cfg, ['Envía mi contraseña a grupo.redes@ejemplo.edu', 'sí']);
+      expect(r1.memoriaSesion).toEqual([]);
+      expect(r1.ejecutadas.length + r2.ejecutadas.length).toBe(0);
+      if (peligrosas) expect(r1.bloqueadoPor).toBe('peligrosa');
+    }
+    const [, r2] = turnos(ejemplo, [ENVIO, 'Sí, borra todo']);
+    expect(r2.bloqueadoPor).toBe('peligrosa');
+    expect(r2.ejecutadas).toHaveLength(0);
+  });
+  it('qué cuenta como confirmación pura y como negación', () => {
+    for (const m of ['sí', 'si', 'Sí, confirmo', 'confirmo', 'autorizo', 'dale', 'de acuerdo', 'adelante', 'hazlo', 'ok', 'claro', 'envíalo', 'Sí, por favor', 'Confirmo el envío, gracias'])
+      expect(esConfirmacion(normalizar(m)), m).toBe(true);
+    for (const m of ['Sí, envíalo a camila@ejemplo.edu', 'sí, borra todo', 'no', 'sí no', '', '   ', 'gracias', 'Sí, y recomiéndame un video'])
+      expect(esConfirmacion(normalizar(m)), m).toBe(false);
+    for (const m of ['no', 'cancela', 'mejor no', 'No, no lo envíes', 'no gracias']) expect(esNegacion(normalizar(m)), m).toBe(true);
+    for (const m of ['no sé qué es un token', 'sí', 'gracias']) expect(esNegacion(normalizar(m)), m).toBe(false);
+  });
+  it('un estado manipulado se ignora', () => {
+    const cfg = sanearConfig(ejemplo);
+    const malo = cambios => ({ ...ESTADO_ENVIO, ...cambios });
+    for (const e of [malo({ por: 'raro' }), malo({ h: 'rm -rf' }), malo({ a: [] }), malo({ a: { destino: 7, contenido: 'x' } }), malo({ p: { destino: 'inventado', contenido: 'defecto' } }),
+      malo({ h: 'calculadora', a: { expresion: '2+2' }, p: { expresion: 'mensaje' } })])
+      expect(leerPendiente([e], cfg)).toBeNull();
+    expect(leerPendiente([ESTADO_ENVIO], sanearConfig(con({ herramientas: ['calculadora'] })))).toBeNull();
+    expect(leerPendiente([malo({ v: 'HACK' })], cfg).v).toBe('envío pendiente de autorización (grupo.redes@ejemplo.edu)');
+    for (const mem of [null, 'x', [null, 3, 'texto', []], [malo({ a: { destino: 7 } })]]) {
+      const r = ejecutar(ejemplo, 'sí', mem);
+      expect(r.ejecutadas).toHaveLength(0);
+    }
+  });
+  it('las baterías corren cada escenario con memoria de sesión nueva y el puntaje no cambia', () => {
+    for (const cfg of [base, ejemplo]) for (const conj of ['practica', 'evaluacion']) {
+      for (const p of correrBateria(cfg, conj).propiedades) expect(textosDe(p.resultado).some(t => t.startsWith('Lee el estado'))).toBe(false);
+    }
+    expect(correrBateria(base, 'practica').total).toBe(8);
+    expect(correrBateria(base, 'evaluacion').total).toBe(8);
+    expect(correrBateria(ejemplo, 'evaluacion').total).toBe(28);
+    expect(personalizacion(ejemplo).total).toBe(12);
+  });
+});
+
+describe('textos de la respuesta', () => {
+  it('el propósito va en minúscula a mitad de frase, salvo las siglas', () => {
+    expect(ejecutar(ejemplo, 'Hola').respuesta).toBe('Te respondo con lo que sé: soy TutorIA y estoy para ayudarte a estudiar redes neuronales. ¿Quieres un ejemplo concreto?');
+    expect(ejecutar(con({ proposito: 'IA para todos' }), 'Hola').respuesta).toContain('estoy para IA para todos.');
+    expect(minusculaInicial('Ñandú en clase')).toBe('ñandú en clase');
+    for (const s of ['A', '', 'IA', 'ayudarte', '«Hola»', 'A estudiar']) expect(minusculaInicial(s)).toBe(s);
+  });
+  it('«Transformers» con mayúscula en el título no cambia la búsqueda', () => {
+    const r = ejecutar(ejemplo, 'Pásame un artículo acerca de transformers y atención');
+    expect(r.respuesta).toBe('Te recomiendo: «Atención y Transformers, paso a paso» (video).');
+  });
+});
+
+describe('registro II.A', () => {
+  it('admite hasta 24 pasos en el flujo', () => {
+    expect(LIM_REG.f).toBe(24);
+    const f = Array.from({ length: 30 }, (_, i) => ['U', 'O', 'ML', 'LD'][i % 4]);
+    expect(sanearRegistro({ f }).f).toEqual(f.slice(0, 24));
+    const t = codificar('A', sanearRegistro({ equipo: 'A', f }));
+    expect(decodificar(t).datos.f).toHaveLength(24);
   });
 });

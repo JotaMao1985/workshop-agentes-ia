@@ -3,7 +3,7 @@ cuando faltan, como haría un modelo real) y redactan. Espejo de la parte «LLM 
 import re
 
 from config import LEXICO
-from texto import normalizar, primera_frase, palabras_de_lista, correos, recortar
+from texto import normalizar, primera_frase, palabras_de_lista, correos, recortar, cubre_por
 from tools import TEXTOS, extraer_expresion, palabras_contenido
 
 ORDEN_ARGS = {
@@ -152,3 +152,13 @@ def interpretar(cfg, crudo, msg):
 
 def tema_modo_siempre(crudo):
     return " ".join(palabras_contenido(crudo))
+
+
+def es_confirmacion(msg):
+    """¿El mensaje es solo una confirmación («sí», «sí, confirmo», «dale», «ok»…), sin otra acción ni destino?"""
+    return cubre_por(msg, LEXICO["confirmacion"], LEXICO["relleno_confirmacion"])
+
+
+def es_negacion(msg):
+    """¿El mensaje es solo una negación («no», «cancela», «mejor no», «no lo envíes»…)?"""
+    return cubre_por(msg, LEXICO["negacion"], LEXICO["relleno_confirmacion"])

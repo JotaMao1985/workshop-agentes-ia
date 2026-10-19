@@ -1,6 +1,6 @@
 # mock_agent · el agente del workshop, en Python
 
-Un agente de IA **simulado**: no usa un LLM real, ni créditos, ni llaves de API. El «LLM» son reglas (`llm_mock.py`), las herramientas están simuladas (`tools.py`) y el ciclo completo está en `agent.py`. Solo usa la biblioteca estándar (Python 3.10 o superior).
+Un agente de IA **simulado**: no usa un LLM real, ni créditos, ni claves de API. El «LLM» son reglas (`llm_mock.py`), las herramientas están simuladas (`tools.py`) y el ciclo completo está en `agent.py`. Solo usa la biblioteca estándar (Python 3.10 o superior).
 
 ```bash
 python main.py                      # conversa con el agente base
@@ -13,7 +13,9 @@ python -m unittest discover -s tests
 ## El ciclo (`agent.py`)
 
 Usuario → Orquestador → Memoria (leer) → LLM decide → Control (antes) → Herramienta → Observación ↺ → LLM redacta → Control (después: evaluador) → Respuesta → Memoria (escribir) → Traza.
-Si no hace falta ninguna herramienta, del «LLM decide» se pasa directo a «LLM redacta».
+Si no hace falta ninguna herramienta, de «LLM decide» se pasa directo a «LLM redacta».
+
+La memoria también lleva el **estado**: si Control (antes) bloquea un envío por falta de autorización (o una herramienta con el hook «confirmar»), `memory.py` guarda la acción pendiente en la memoria de la sesión, y en el siguiente mensaje «sí, confirmo» la ejecuta, «no» la cancela y cualquier otro mensaje la descarta. Pruébalo con `python main.py --config datos/config_ejemplo_completo.json` (el envío está en `"pedir"`): escribe «Envía el plan a grupo.redes@ejemplo.edu» y luego «Sí, confirmo». La clase `Agente` conserva `r["memoriaSesion"]` entre mensajes.
 
 | Archivo | Bloque | Qué hace |
 |---|---|---|

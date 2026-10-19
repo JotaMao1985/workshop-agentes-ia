@@ -1,15 +1,20 @@
 """El agente: el ciclo Orquestador → Memoria → LLM → Control → Herramienta → Observación → LLM →
 Control (evaluador) → Memoria → Traza. Espejo de ejecutar() en app/src/motor/agente.js.
 
+Confirmación en dos turnos: si Control (antes) bloquea una acción porque falta autorización (envío en
+«pedir») o confirmación (hook «confirmar»), la Memoria guarda el estado en la memoria de la sesión. En el
+turno siguiente, una confirmación pura («sí», «confirmo»…) ejecuta la acción guardada, una negación la
+cancela y cualquier otro mensaje la descarta. Agente guarda r["memoriaSesion"] entre mensajes.
+
 Uso mínimo:
     from agent import Agente
     print(Agente(config).run("¿Cuánto es 2 + 2?")["respuesta"])
 """
 from config import LEXICO, sanear_config
 from hooks import control_antes, evaluador_activo
-from llm_mock import ORDEN_ARGS, extraer_args, interpretar, tema_modo_siempre
-from memory import Memoria
-from texto import normalizar, primera_frase, formatear, contiene, formato_numero, recortar
+from llm_mock import ORDEN_ARGS, extraer_args, interpretar, tema_modo_siempre, es_confirmacion, es_negacion
+from memory import Memoria, TIPO_ESTADO, entradas_de_sesion, leer_pendiente
+from texto import normalizar, primera_frase, formatear, contiene, formato_numero, recortar, minuscula_inicial
 from tools import TEXTOS, CATALOGO, ErrorCalculo, calcular, correr_herramienta, aproximar, texto_resumen, texto_revision
 
 
@@ -19,6 +24,11 @@ def _texto_args(args):
 
 def _mayuscula(s):
     return s[0].upper() + s[1:] if s else s
+
+
+def _describir_pendiente(por, herramienta, args):
+    E = TEXTOS["estado_pendiente"]
+    return formatear(E["envio"], {"destino": args["destino"]}) if por == "envio" else formatear(E["confirmar"], {"herramienta": herramienta})
 
 
 def ejecutar(cfg_entrada, mensaje, memoria_sesion=None):
@@ -31,25 +41,43 @@ def ejecutar(cfg_entrada, mensaje, memoria_sesion=None):
     def paso(b, clave, datos=None, e="ok"):
         traza.append({"b": b, "t": formatear(T[clave], datos or {}), "e": e})
 
+    # memoriaEscrita: lo que se pidió recordar en este turno. memoriaSesion: la memoria de la sesión
+    # completa después del turno (entradas + estado pendiente, si quedó uno): es la que se pasa al siguiente.
     r = {"intencion": "conversacional", "accion": "responder", "herramienta": None, "ejecutadas": [],
          "bloqueado": False, "bloqueadoPor": None, "aclaracion": False, "fuentesInventadas": 0,
-         "afirmoAccion": False, "resultadoNumerico": None, "respuesta": "", "memoriaEscrita": [], "traza": traza}
-    extra = [e for e in (memoria_sesion if isinstance(memoria_sesion, list) else [])
-             if isinstance(e, dict) and isinstance(e.get("v"), str)][:10]
-    memoria = Memoria(cfg["memoria"] + extra)
+         "afirmoAccion": False, "resultadoNumerico": None, "respuesta": "", "memoriaEscrita": [],
+         "memoriaSesion": [], "traza": traza}
+    entradas_sesion = entradas_de_sesion(memoria_sesion)
+    memoria = Memoria(cfg["memoria"] + entradas_sesion[:10])
+    pendiente = leer_pendiente(memoria_sesion, cfg, ORDEN_ARGS)
+    if pendiente:
+        pendiente["v"] = _describir_pendiente(pendiente["por"], pendiente["h"], pendiente["args"])
     autorizado = primera_frase(msg, LEXICO["autorizacion"]) is not None
 
     paso("orquestador", "recibe")
     if len(memoria):
         paso("memoria", "mem_leer", {"n": len(memoria)})
-    else:
+    elif not pendiente:
         paso("memoria", "mem_vacia")
+    # Con un estado pendiente, el mensaje lo confirma, lo cancela o (cualquier otro) lo descarta.
+    con_pendiente = None
+    if pendiente:
+        con_pendiente = "confirmar" if es_confirmacion(msg) else "cancelar" if es_negacion(msg) else "descartar"
+        paso("memoria", "mem_descarta_pendiente" if con_pendiente == "descartar" else "mem_lee_pendiente",
+             {"estado": pendiente["v"]})
 
     # --- LLM decide ---
     tipo, nombre, faltan, texto_memoria = None, None, [], ""
-    it = interpretar(cfg, crudo, msg)
+    it = {"intencion": con_pendiente} if con_pendiente in ("confirmar", "cancelar") else interpretar(cfg, crudo, msg)
     r["intencion"] = it["intencion"]
-    if it["intencion"] == "regla":
+    if it["intencion"] in ("confirmar", "cancelar"):
+        # El estado manda: confirmar ejecuta la acción guardada; cancelar responde sin herramientas.
+        paso("llm", "llm_intencion", {"intencion": TEXTOS["intencion"][con_pendiente]})
+        if con_pendiente == "confirmar":
+            tipo, nombre = "herramienta", pendiente["h"]
+        else:
+            tipo = "responder"
+    elif it["intencion"] == "regla":
         regla = it["regla"]
         paso("llm", "llm_intencion", {"intencion": TEXTOS["intencion"]["regla"]})
         if regla["a"].startswith("herramienta:"):
@@ -88,7 +116,9 @@ def ejecutar(cfg_entrada, mensaje, memoria_sesion=None):
         base = cfg["adaptada"]["b"] if es_adaptada else nombre
         habilitada = es_adaptada or nombre in cfg["herramientas"]
         r["herramienta"] = nombre
-        if r["intencion"] == "conversacional":
+        if con_pendiente == "confirmar":
+            args, proc = dict(pendiente["args"]), dict(pendiente["proc"])
+        elif r["intencion"] == "conversacional":
             tema = tema_modo_siempre(crudo)
             if tema:
                 args, proc = {"tema": tema}, {"tema": "mensaje"}
@@ -121,7 +151,9 @@ def ejecutar(cfg_entrada, mensaje, memoria_sesion=None):
     r["accion"] = tipo
 
     # --- Control (antes) ---
-    bloqueo, avisos = control_antes(cfg, msg, tipo, nombre, base, habilitada, args, supuestos, autorizado)
+    # Confirmar la acción pendiente es la autorización explícita de este turno; los demás controles siguen.
+    autorizado_ahora = autorizado or con_pendiente == "confirmar"
+    bloqueo, avisos = control_antes(cfg, msg, tipo, nombre, base, habilitada, args, supuestos, autorizado_ahora)
     if bloqueo:
         r["bloqueado"], r["bloqueadoPor"] = True, bloqueo["por"]
         claves = {"regla": "ctrl_bloq_regla", "peligrosa": "ctrl_bloq_peligrosa", "confirmar": "ctrl_bloq_confirmar",
@@ -142,10 +174,12 @@ def ejecutar(cfg_entrada, mensaje, memoria_sesion=None):
             r["aclaracion"] = True
             r["respuesta"] = formatear(R["aclarar"], {"faltan": TEXTOS["y"].join(TEXTOS["faltan"][k] for k in supuestos)})
     else:
+        if con_pendiente == "confirmar":
+            paso("control", "ctrl_autorizado")
         if avisos:
             for a in avisos:
                 paso("control", a, {}, "aviso")
-        else:
+        elif con_pendiente != "confirmar":
             paso("control", "ctrl_ok")
 
         # --- Herramienta y observación ---
@@ -201,6 +235,8 @@ def ejecutar(cfg_entrada, mensaje, memoria_sesion=None):
                 r["respuesta"] = formatear(R["evaluar"], {"res": texto_revision(args["texto"])})
             elif base == "consultar_calendario":
                 r["respuesta"] = formatear(R["calendario"], {"res": CATALOGO["calendario"]}) if habilitada else R["calendario_sin_tool"]
+        elif tipo == "responder" and con_pendiente == "cancelar":
+            r["respuesta"] = R["cancelado_envio"] if pendiente["base"] == "enviar_correo" else R["cancelado"]
         elif tipo == "responder":
             definicion = None
             for term, txt in TEXTOS["glosario"]:
@@ -209,7 +245,7 @@ def ejecutar(cfg_entrada, mensaje, memoria_sesion=None):
                     break
             r["respuesta"] = definicion or formatear(R["por_defecto"], {
                 "nombre": cfg["nombre"] or "Agente base",
-                "proposito": cfg["proposito"] or TEXTOS["proposito_por_tipo"][cfg["tipo"]]})
+                "proposito": minuscula_inicial(cfg["proposito"] or TEXTOS["proposito_por_tipo"][cfg["tipo"]])})
         elif tipo == "inexistente":
             paso("llm", "llm_afirma", {}, "aviso")
             r["afirmoAccion"], r["respuesta"] = True, R["afirma"]
@@ -233,9 +269,21 @@ def ejecutar(cfg_entrada, mensaje, memoria_sesion=None):
             paso("control", "eval_apagado", {}, "aviso")
 
     # --- Memoria (escribir) y traza ---
+    # Solo queda estado pendiente si faltó autorización o confirmación: «Bloquear siempre» es definitivo.
+    nuevo_pendiente = None
+    if bloqueo and bloqueo["por"] in ("envio", "confirmar"):
+        nuevo_pendiente = {"t": TIPO_ESTADO, "v": _describir_pendiente(bloqueo["por"], nombre, args),
+                           "por": bloqueo["por"], "h": nombre, "a": dict(args), "p": dict(proc)}
+    r["memoriaSesion"] = entradas_sesion + r["memoriaEscrita"] + ([nuevo_pendiente] if nuevo_pendiente else [])
     enviado = next((x for x in r["ejecutadas"] if x["base"] == "enviar_correo" and x["ok"]), None)
     if r["memoriaEscrita"]:
         paso("memoria", "mem_escribe", {"texto": r["memoriaEscrita"][0]["v"]})
+    elif nuevo_pendiente:
+        paso("memoria", "mem_guarda_pendiente", {"estado": nuevo_pendiente["v"]})
+    elif con_pendiente == "confirmar":
+        paso("memoria", "mem_borra_bloqueado" if r["bloqueado"] else "mem_borra_hecho")
+    elif con_pendiente == "cancelar":
+        paso("memoria", "mem_borra_cancelado")
     elif enviado:
         paso("memoria", "mem_estado", {"estado": formatear(TEXTOS["estado_envio"], {"destino": enviado["args"]["destino"]})})
     else:
@@ -245,7 +293,8 @@ def ejecutar(cfg_entrada, mensaje, memoria_sesion=None):
 
 
 class Agente:
-    """Envoltorio con memoria de sesión: lo que se pide recordar persiste entre mensajes."""
+    """Envoltorio con memoria de sesión: lo que se pide recordar y el estado pendiente (una acción que
+    espera tu «sí») persisten entre mensajes."""
 
     def __init__(self, config=None):
         self.config = sanear_config(config if config is not None else {})
@@ -253,5 +302,5 @@ class Agente:
 
     def run(self, mensaje):
         r = ejecutar(self.config, mensaje, self.memoria_sesion)
-        self.memoria_sesion.extend(r["memoriaEscrita"])
+        self.memoria_sesion = r["memoriaSesion"]
         return r

@@ -26,7 +26,7 @@ export default function Facilitador() {
   if (!ok) {
     return (
       <>
-        <header className="cabecera"><div className="cabecera-fila"><span className="marca">Taller de agentes · <span>facilitador</span></span></div></header>
+        <header className="cabecera"><div className="cabecera-fila"><span className="marca">Workshop «Agentes de IA» · <span>facilitador</span></span></div></header>
         <main>
           <form className="tarjeta" onSubmit={e => {
             e.preventDefault();
@@ -46,7 +46,7 @@ export default function Facilitador() {
   return (
     <div className={pestana === 'podio' ? 'proyector' : ''}>
       <header className="cabecera">
-        <div className="cabecera-fila"><span className="marca">Taller de agentes · <span>facilitador</span></span><a href="#/proyector" style={{ color: '#fff', fontSize: '.85rem' }}>Vista de proyección</a></div>
+        <div className="cabecera-fila"><span className="marca">Workshop «Agentes de IA» · <span>facilitador</span></span><a href="#/proyector" style={{ color: '#fff', fontSize: '.85rem' }}>Vista de proyección</a></div>
         <nav className="pestanas" role="tablist" aria-label="Secciones del facilitador">
           {PESTANAS.map(([k, t]) => <button key={k} role="tab" className="pestana" aria-selected={pestana === k} onClick={() => setPestana(k)}>{t}</button>)}
         </nav>

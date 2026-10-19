@@ -62,3 +62,35 @@ def formato_numero(x):
 def recortar(s, n):
     s = "" if s is None else str(s)
     return s[:n]
+
+
+def minuscula_inicial(s):
+    """Primera letra en minúscula para insertar un texto a mitad de frase, solo si la segunda letra es
+    minúscula: «Ayudarte a estudiar» → «ayudarte a estudiar», pero «IA para todos» queda igual."""
+    s = "" if s is None else str(s)
+    if len(s) < 2:
+        return s
+    p, q = s[0], s[1]
+    if p.lower() != p and q.upper() != q and q.lower() == q:
+        return p.lower() + s[1:]
+    return s
+
+
+def cubre_por(msg_norm, principales, relleno):
+    """¿El mensaje normalizado está hecho solo de estas frases? Exige al menos una de «principales» y deja
+    pasar las de «relleno» («por favor», «gracias»…). Recorre de izquierda a derecha y prueba primero
+    las frases más largas: «no lo envies» gana a «no»."""
+    ws = [w for w in msg_norm.split(" ") if w]
+    if not ws:
+        return False
+    frases = sorted([(f.split(" "), True) for f in principales] + [(f.split(" "), False) for f in relleno],
+                    key=lambda x: -len(x[0]))
+    i, alguna = 0, False
+    while i < len(ws):
+        f = next((x for x in frases if ws[i:i + len(x[0])] == x[0]), None)
+        if f is None:
+            return False
+        if f[1]:
+            alguna = True
+        i += len(f[0])
+    return alguna

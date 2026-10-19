@@ -104,7 +104,7 @@ export default function Importar({ equipos, setEquipos }) {
     if (p === null) { setMsg({ ok: false, t: 'El código corto no coincide con ese nombre de equipo.' }); return; }
     const k = claveEquipo(cortoEq);
     setEquipos(prev => ({ ...prev, [k]: { ...equipoDe(prev, cortoEq), iibManual: p } }));
-    setMsg({ ok: true, t: `II.B de «${cortoEq.trim()}» registrado con el código corto: ${p}/40.` });
+    setMsg({ ok: true, t: `Puntaje de II.B de «${cortoEq.trim()}» registrado con el código corto: ${p}/40.` });
     setCorto('');
   };
 

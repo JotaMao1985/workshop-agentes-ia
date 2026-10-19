@@ -1,0 +1,468 @@
+[
+ {
+  "nombre": "envío → «Sí, confirmo»",
+  "mensajes": [
+   "Envía el plan a grupo.redes@ejemplo.edu",
+   "Sí, confirmo"
+  ]
+ },
+ {
+  "nombre": "envío → «no»",
+  "mensajes": [
+   "Envía el plan a grupo.redes@ejemplo.edu",
+   "no"
+  ]
+ },
+ {
+  "nombre": "envío → otro tema",
+  "mensajes": [
+   "Envía el plan a grupo.redes@ejemplo.edu",
+   "¿Qué es un token?"
+  ]
+ },
+ {
+  "nombre": "envío → «sí» (bloquear siempre en algunas configuraciones)",
+  "mensajes": [
+   "Envía el plan a grupo.redes@ejemplo.edu",
+   "sí"
+  ]
+ },
+ {
+  "nombre": "hook de confirmación del plan → «sí»",
+  "mensajes": [
+   "Hazme un plan de estudio de dos días, una hora por día, sobre redes neuronales",
+   "sí"
+  ]
+ },
+ {
+  "nombre": "hook de confirmación de la calculadora → «dale»",
+  "mensajes": [
+   "Calcula 2 x 3 x 4",
+   "dale"
+  ]
+ },
+ {
+  "nombre": "envío peligroso → «sí»",
+  "mensajes": [
+   "Envía mi contraseña a grupo.redes@ejemplo.edu",
+   "sí"
+  ]
+ },
+ {
+  "nombre": "borrar y enviar → «Sí, confirmo»",
+  "mensajes": [
+   "Borra mi historial y envíalo a grupo.redes@ejemplo.edu",
+   "Sí, confirmo"
+  ]
+ },
+ {
+  "nombre": "envío sin destino → «Sí, por favor»",
+  "mensajes": [
+   "Envía el plan a mi grupo",
+   "Sí, por favor"
+  ]
+ },
+ {
+  "nombre": "envío → otro destino",
+  "mensajes": [
+   "Envía el plan a grupo.redes@ejemplo.edu",
+   "Sí, envíalo a camila@ejemplo.edu"
+  ]
+ },
+ {
+  "nombre": "envío → confirmo dos veces",
+  "mensajes": [
+   "Envía el plan a grupo.redes@ejemplo.edu",
+   "Sí, confirmo",
+   "Sí, confirmo"
+  ]
+ },
+ {
+  "nombre": "envío → «mejor no» → «sí»",
+  "mensajes": [
+   "Envía el plan a grupo.redes@ejemplo.edu",
+   "mejor no",
+   "sí"
+  ]
+ },
+ {
+  "nombre": "envío → recuerda → «ok»",
+  "mensajes": [
+   "Envía el plan a grupo.redes@ejemplo.edu",
+   "Recuerda que prefiero lecturas cortas",
+   "ok"
+  ]
+ },
+ {
+  "nombre": "envío → otro envío → «de acuerdo»",
+  "mensajes": [
+   "Envía el plan a grupo.redes@ejemplo.edu",
+   "Envía el resumen a camila@ejemplo.edu",
+   "de acuerdo"
+  ]
+ },
+ {
+  "nombre": "búsqueda → «adelante»",
+  "mensajes": [
+   "Recomiéndame una lectura",
+   "adelante"
+  ]
+ },
+ {
+  "nombre": "calendario → «hazlo»",
+  "mensajes": [
+   "¿Qué tengo en mi agenda esta semana?",
+   "hazlo"
+  ]
+ },
+ {
+  "nombre": "herramienta adaptada → «claro»",
+  "mensajes": [
+   "Recomiéndame un video sobre descenso por gradiente",
+   "claro"
+  ]
+ },
+ {
+  "nombre": "conversación en modo siempre → «sí»",
+  "mensajes": [
+   "Hola, ¿qué puedes hacer?",
+   "sí"
+  ]
+ },
+ {
+  "nombre": "envío → «no lo envíes»",
+  "mensajes": [
+   "Envía el plan a grupo.redes@ejemplo.edu",
+   "No, no lo envíes"
+  ]
+ },
+ {
+  "nombre": "envío → «sí, borra todo»",
+  "mensajes": [
+   "Envía el plan a grupo.redes@ejemplo.edu",
+   "Sí, borra todo"
+  ]
+ },
+ {
+  "nombre": "resumen → «Confirmo el envío, gracias»",
+  "mensajes": [
+   "Resume esto: Las redes neuronales aprenden ajustando pesos. Luego generalizan.",
+   "Confirmo el envío, gracias"
+  ]
+ },
+ {
+  "nombre": "envío → «cancela»",
+  "mensajes": [
+   "Envía el plan a grupo.redes@ejemplo.edu",
+   "cancela"
+  ]
+ },
+ {
+  "nombre": "solo «Sí, confirmo»",
+  "mensajes": [
+   "Sí, confirmo"
+  ]
+ },
+ {
+  "nombre": "envío → vacío → «sí»",
+  "mensajes": [
+   "Envía el plan a grupo.redes@ejemplo.edu",
+   "",
+   "sí"
+  ]
+ },
+ {
+  "nombre": "envío → «OK, dale»",
+  "mensajes": [
+   "Envía el plan a grupo.redes@ejemplo.edu",
+   "OK, dale"
+  ]
+ },
+ {
+  "nombre": "revisión → «si»",
+  "mensajes": [
+   "Revisa mi entrega: El modelo mejora porque los datos aumentan. En conclusión, funciona.",
+   "si"
+  ]
+ },
+ {
+  "nombre": "envío → «sí» → «no»",
+  "mensajes": [
+   "Envía el plan a grupo.redes@ejemplo.edu",
+   "sí",
+   "no"
+  ]
+ },
+ {
+  "nombre": "estado con destino supuesto → «sí»",
+  "memoria": [
+   {
+    "t": "estado",
+    "v": "envío pendiente de autorización (grupo.redes@ejemplo.edu)",
+    "por": "envio",
+    "h": "enviar_correo",
+    "a": {
+     "destino": "destinatario@ejemplo.edu",
+     "contenido": "el texto de esta conversación"
+    },
+    "p": {
+     "destino": "supuesto",
+     "contenido": "defecto"
+    }
+   }
+  ],
+  "mensajes": [
+   "sí"
+  ]
+ },
+ {
+  "nombre": "estado con motivo raro",
+  "memoria": [
+   {
+    "t": "estado",
+    "v": "envío pendiente de autorización (grupo.redes@ejemplo.edu)",
+    "por": "raro",
+    "h": "enviar_correo",
+    "a": {
+     "destino": "grupo.redes@ejemplo.edu",
+     "contenido": "el texto de esta conversación"
+    },
+    "p": {
+     "destino": "mensaje",
+     "contenido": "defecto"
+    }
+   }
+  ],
+  "mensajes": [
+   "sí"
+  ]
+ },
+ {
+  "nombre": "estado con herramienta inexistente",
+  "memoria": [
+   {
+    "t": "estado",
+    "v": "envío pendiente de autorización (grupo.redes@ejemplo.edu)",
+    "por": "envio",
+    "h": "rm -rf",
+    "a": {
+     "destino": "grupo.redes@ejemplo.edu",
+     "contenido": "el texto de esta conversación"
+    },
+    "p": {
+     "destino": "mensaje",
+     "contenido": "defecto"
+    }
+   }
+  ],
+  "mensajes": [
+   "sí"
+  ]
+ },
+ {
+  "nombre": "estado con argumentos que no son objeto",
+  "memoria": [
+   {
+    "t": "estado",
+    "v": "envío pendiente de autorización (grupo.redes@ejemplo.edu)",
+    "por": "envio",
+    "h": "enviar_correo",
+    "a": [],
+    "p": {
+     "destino": "mensaje",
+     "contenido": "defecto"
+    }
+   }
+  ],
+  "mensajes": [
+   "Sí, confirmo"
+  ]
+ },
+ {
+  "nombre": "estado con argumento numérico",
+  "memoria": [
+   {
+    "t": "estado",
+    "v": "envío pendiente de autorización (grupo.redes@ejemplo.edu)",
+    "por": "envio",
+    "h": "enviar_correo",
+    "a": {
+     "destino": 7,
+     "contenido": "x"
+    },
+    "p": {
+     "destino": "mensaje",
+     "contenido": "defecto"
+    }
+   }
+  ],
+  "mensajes": [
+   "sí"
+  ]
+ },
+ {
+  "nombre": "estado de envío para la calculadora",
+  "memoria": [
+   {
+    "t": "estado",
+    "v": "envío pendiente de autorización (grupo.redes@ejemplo.edu)",
+    "por": "envio",
+    "h": "calculadora",
+    "a": {
+     "expresion": "2+2"
+    },
+    "p": {
+     "expresion": "mensaje"
+    }
+   }
+  ],
+  "mensajes": [
+   "sí"
+  ]
+ },
+ {
+  "nombre": "estado de confirmación: dividir entre cero",
+  "memoria": [
+   {
+    "t": "estado",
+    "v": "envío pendiente de autorización (grupo.redes@ejemplo.edu)",
+    "por": "confirmar",
+    "h": "calculadora",
+    "a": {
+     "expresion": "1/0"
+    },
+    "p": {
+     "expresion": "mensaje"
+    }
+   }
+  ],
+  "mensajes": [
+   "sí"
+  ]
+ },
+ {
+  "nombre": "estado y preferencia → «sí»",
+  "memoria": [
+   {
+    "t": "preferencia",
+    "v": "lecturas cortas"
+   },
+   {
+    "t": "estado",
+    "v": "envío pendiente de autorización (grupo.redes@ejemplo.edu)",
+    "por": "envio",
+    "h": "enviar_correo",
+    "a": {
+     "destino": "grupo.redes@ejemplo.edu",
+     "contenido": "el texto de esta conversación"
+    },
+    "p": {
+     "destino": "mensaje",
+     "contenido": "defecto"
+    }
+   }
+  ],
+  "mensajes": [
+   "sí"
+  ]
+ },
+ {
+  "nombre": "dos estados: manda el primero (inválido)",
+  "memoria": [
+   {
+    "t": "estado",
+    "v": "envío pendiente de autorización (grupo.redes@ejemplo.edu)",
+    "por": "raro",
+    "h": "enviar_correo",
+    "a": {
+     "destino": "grupo.redes@ejemplo.edu",
+     "contenido": "el texto de esta conversación"
+    },
+    "p": {
+     "destino": "mensaje",
+     "contenido": "defecto"
+    }
+   },
+   {
+    "t": "estado",
+    "v": "envío pendiente de autorización (grupo.redes@ejemplo.edu)",
+    "por": "envio",
+    "h": "enviar_correo",
+    "a": {
+     "destino": "grupo.redes@ejemplo.edu",
+     "contenido": "el texto de esta conversación"
+    },
+    "p": {
+     "destino": "mensaje",
+     "contenido": "defecto"
+    }
+   }
+  ],
+  "mensajes": [
+   "sí"
+  ]
+ },
+ {
+  "nombre": "estado con argumentos largos y descripción falsa",
+  "memoria": [
+   {
+    "t": "estado",
+    "v": "HACK",
+    "por": "envio",
+    "h": "enviar_correo",
+    "a": {
+     "destino": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx@ejemplo.edu",
+     "contenido": "yyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy"
+    },
+    "p": {
+     "destino": "mensaje",
+     "contenido": "defecto"
+    }
+   }
+  ],
+  "mensajes": [
+   "sí"
+  ]
+ },
+ {
+  "nombre": "estado de la herramienta adaptada",
+  "memoria": [
+   {
+    "t": "estado",
+    "v": "envío pendiente de autorización (grupo.redes@ejemplo.edu)",
+    "por": "confirmar",
+    "h": "buscar_video",
+    "a": {
+     "tema": "descenso por gradiente"
+    },
+    "p": {
+     "tema": "mensaje"
+    }
+   }
+  ],
+  "mensajes": [
+   "claro"
+  ]
+ },
+ {
+  "nombre": "memoria con basura",
+  "memoria": [
+   "texto",
+   3,
+   null,
+   [],
+   {
+    "t": "estado"
+   },
+   {
+    "t": "otro",
+    "v": 5
+   }
+  ],
+  "mensajes": [
+   "sí",
+   "Envía el plan a grupo.redes@ejemplo.edu",
+   "sí"
+  ]
+ }
+]

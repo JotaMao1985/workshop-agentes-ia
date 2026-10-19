@@ -13,7 +13,7 @@ export default function Retos({ equipos, setEquipos }) {
   return (
     <section className="tarjeta">
       <h2>Parte I · Retos 1 a 5 (6 pts cada uno)</h2>
-      <p className="nota">{TITULOS.map((t, i) => `R${i + 1}: ${t}`).join(' · ')}. Las claves están en el guion.</p>
+      <p className="nota">{TITULOS.map((t, i) => `R${i + 1}: ${t}`).join(' · ')} Las claves están en el guion.</p>
       <div className="desplazable">
         <table className="tabla">
           <thead><tr><th>Equipo</th>{TITULOS.map((_, i) => <th key={i} className="num">R{i + 1}</th>)}<th className="num">Total</th></tr></thead>

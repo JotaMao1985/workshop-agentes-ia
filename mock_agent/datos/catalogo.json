@@ -7,7 +7,7 @@
     {"titulo": "Deep learning: capas y representaciones", "tipo": "articulo", "etiquetas": ["deep", "learning", "aprendizaje", "profundo", "capas", "representaciones"]},
     {"titulo": "Redes convolucionales para imágenes", "tipo": "curso", "etiquetas": ["cnn", "redes", "convolucionales", "convolucional", "imagenes", "filtros", "vision"]},
     {"titulo": "ResNet y las conexiones residuales", "tipo": "articulo", "etiquetas": ["resnet", "residuales", "residual", "conexiones", "profundas", "imagenes"]},
-    {"titulo": "Atención y transformers, paso a paso", "tipo": "video", "etiquetas": ["transformer", "transformers", "atencion", "tokens", "lenguaje"]},
+    {"titulo": "Atención y Transformers, paso a paso", "tipo": "video", "etiquetas": ["transformer", "transformers", "atencion", "tokens", "lenguaje"]},
     {"titulo": "¿Qué es un token?", "tipo": "articulo", "etiquetas": ["token", "tokens", "tokenizacion", "contexto", "ventana"]},
     {"titulo": "Modelos de lenguaje (LLM) para principiantes", "tipo": "libro", "etiquetas": ["llm", "modelos", "modelo", "lenguaje", "generacion", "principiantes"]},
     {"titulo": "Agentes de IA: herramientas, memoria y control", "tipo": "articulo", "etiquetas": ["agentes", "agente", "herramientas", "memoria", "control", "hooks"]},

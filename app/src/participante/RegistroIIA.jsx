@@ -29,7 +29,7 @@ export default function RegistroIIA({ registro, setRegistro, equipo }) {
       </section>
       <section className="tarjeta">
         <h3>Flujo que siguieron</h3>
-        <p className="nota">Toca las fichas en el orden en que pasaron (puedes repetir: el ciclo es un bucle).</p>
+        <p className="nota">Toquen las fichas en el orden en que pasaron (pueden repetir: el ciclo es un bucle).</p>
         <div className="fichas" style={{ marginBottom: 10 }}>
           {FICHAS_FLUJO.map(([c, t]) => (
             <button key={c} type="button" className="ficha" disabled={flujo.length >= LIM_REG.f} onClick={() => set('f', [...flujo, c])}>+ {t}</button>
@@ -58,7 +58,7 @@ export default function RegistroIIA({ registro, setRegistro, equipo }) {
       <section className="tarjeta">
         <Texto etiqueta="¿Cómo manejaron el imprevisto?" valor={registro.im} alCambiar={v => set('im', v)} max={LIM_REG.im} area />
         <Texto etiqueta="Respuesta final al usuario" valor={registro.r} alCambiar={v => set('r', v)} max={LIM_REG.r} area />
-        <Lista etiqueta="Rol clave del equipo" valor={registro.k} alCambiar={v => set('k', v)} opciones={[['', 'Elige uno…'], ...ROLES]} />
+        <Lista etiqueta="Rol clave del equipo" valor={registro.k} alCambiar={v => set('k', v)} opciones={[['', 'Elijan uno…'], ...ROLES]} />
         <p className="nota">Se guarda solo en este celular. Cuando terminen, vayan a «Entregar».</p>
       </section>
     </>

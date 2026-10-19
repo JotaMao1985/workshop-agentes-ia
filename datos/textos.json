@@ -12,7 +12,9 @@
     "peligrosa": "acción destructiva o fuera de propósito",
     "recordar": "guardar algo en memoria",
     "regla": "regla del equipo",
-    "adaptada": "usar la herramienta adaptada"
+    "adaptada": "usar la herramienta adaptada",
+    "confirmar": "confirmar la acción pendiente",
+    "cancelar": "cancelar la acción pendiente"
   },
   "faltan": {
     "dias": "cuántos días",
@@ -35,6 +37,8 @@
     "mem_vacia": "Lee la memoria: está vacía.",
     "mem_leer": "Lee la memoria: {n} entrada(s).",
     "mem_usa": "Toma de la memoria: {datos}.",
+    "mem_lee_pendiente": "Lee el estado: hay un {estado}.",
+    "mem_descarta_pendiente": "Lee el estado: hay un {estado}, pero este mensaje no lo confirma: lo descarta.",
     "llm_intencion": "Interpreta la intención: {intencion}.",
     "llm_regla": "Aplica la instrucción del equipo «{palabra}» → {accion}.",
     "llm_modo_siempre": "Modo «siempre»: usará una herramienta aunque no haga falta.",
@@ -47,6 +51,7 @@
     "llm_memoria": "Propone guardar en memoria: «{texto}».",
     "llm_bloquear": "Su instrucción le dice que no lo haga.",
     "ctrl_ok": "Revisa antes de actuar: todo en orden.",
+    "ctrl_autorizado": "Revisa antes de actuar: autorización explícita recibida en este turno.",
     "ctrl_sin_hook_peligrosa": "Ningún hook revisa acciones peligrosas: pasa sin revisar.",
     "ctrl_sin_hook_envio": "El hook de autorización está apagado: el envío pasa sin revisar.",
     "ctrl_sin_hook_args": "Nadie revisa los argumentos supuestos: pasan.",
@@ -67,6 +72,10 @@
     "eval_apagado": "Sin evaluador: la respuesta sale sin revisar.",
     "mem_escribe": "Escribe en memoria: «{texto}».",
     "mem_estado": "Actualiza el estado: {estado}.",
+    "mem_guarda_pendiente": "Guarda el estado: {estado}.",
+    "mem_borra_hecho": "Borra el estado: la acción pendiente ya se ejecutó.",
+    "mem_borra_cancelado": "Borra el estado: la acción pendiente se canceló.",
+    "mem_borra_bloqueado": "Borra el estado: la acción pendiente no pasó el control.",
     "mem_nada": "Nada nuevo que recordar.",
     "traza": "Traza completa: {n} pasos."
   },
@@ -93,6 +102,8 @@
     "bloq_envio_siempre": "Este agente no tiene permitido enviar correos.",
     "bloq_confirmar": "Antes de usar {herramienta} necesito que lo confirmes.",
     "bloq_instruccion": "Prefiero no hacer eso, según mis instrucciones.",
+    "cancelado_envio": "Entendido: no lo envío.",
+    "cancelado": "Entendido: no lo hago.",
     "afirma": "Listo, ya lo hice.",
     "memoria": "Anotado: lo recordaré.",
     "por_defecto": "Te respondo con lo que sé: soy {nombre} y estoy para {proposito}. ¿Quieres un ejemplo concreto?"
@@ -124,7 +135,7 @@
     ],
     [
       "neurona",
-      "Una neurona artificial calcula z = w·x + b y le aplica una activación; aprender es ajustar w y b."
+      "Una neurona artificial calcula z = wᵀx + b y le aplica una activación; aprender es ajustar w y b."
     ],
     [
       "hook",
@@ -156,6 +167,10 @@
   "no": "no",
   "contenido_por_defecto": "el texto de esta conversación",
   "estado_envio": "envío realizado a {destino}",
+  "estado_pendiente": {
+    "envio": "envío pendiente de autorización ({destino})",
+    "confirmar": "uso de {herramienta} pendiente de confirmación"
+  },
   "errores": {
     "division_cero": "no se puede dividir entre cero",
     "sintaxis": "la operación no está bien escrita",

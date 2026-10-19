@@ -14,8 +14,9 @@ export default function Marcador({ equipos, setEquipos }) {
   const archivo = useRef(null);
   const csv = () => {
     const enc = ['puesto', 'equipo', 'parte_I', 'II_A', 'II_B', 'total', 'empate'];
-    const lineas = filas.map(f => [f.puesto, '"' + f.nombre.replace(/"/g, '""') + '"', f.parteI, f.iia, f.iib, f.total, f.empate ? 'si' : 'no'].join(','));
-    descargar('marcador_workshop.csv', [enc.join(','), ...lineas].join('\n'), 'text/csv');
+    const lineas = filas.map(f => [f.puesto, '"' + f.nombre.replace(/"/g, '""') + '"', f.parteI, f.iia, f.iib, f.total, f.empate ? 'sí' : 'no'].join(','));
+    // BOM de UTF-8: así Excel lee bien las tildes («sí», nombres de equipo).
+    descargar('marcador_workshop.csv', '\uFEFF' + [enc.join(','), ...lineas].join('\n'), 'text/csv;charset=utf-8');
   };
   const restaurar = f => {
     if (!f) return;
@@ -41,7 +42,7 @@ export default function Marcador({ equipos, setEquipos }) {
             </tbody>
           </table>
         )}
-        <p className="nota">Desempate: II.B, luego II.A, luego Reto 5; si persiste, la pregunta relámpago del guion.</p>
+        <p className="nota">Desempate: II.B, luego II.A, luego el Reto 5; si persiste, la pregunta relámpago del guion.</p>
       </section>
       <section className="tarjeta">
         <h3>Respaldo</h3>

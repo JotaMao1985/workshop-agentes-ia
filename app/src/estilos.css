@@ -70,6 +70,12 @@ code { font-family: ui-monospace, "Fira Code", monospace; font-size: .9em; }
 }
 .pestana[aria-selected="true"] { color: #fff; border-bottom-color: var(--naranja); }
 .pestana:focus-visible { outline: 2px solid var(--dorado); outline-offset: -2px; }
+/* En pantallas estrechas las 6 pestañas no caben en una fila: dos filas de 3, siempre visibles, sin desplazamiento. */
+@media (max-width: 679px) {
+  .pestanas { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 2px 4px; overflow: visible; margin: 4px -12px 0; padding: 0 0 2px; }
+  .pestana { padding: 8px 2px; min-height: 42px; font-size: .85rem; white-space: normal; text-align: center; line-height: 1.15; border-radius: 8px 8px 0 0; }
+  .pestana[aria-selected="true"] { background: rgb(255 255 255 / 10%); }
+}
 
 main { max-width: 760px; margin: 0 auto; padding: 16px 16px calc(40px + env(safe-area-inset-bottom)); }
 .ancho main, main.ancho { max-width: 1100px; }

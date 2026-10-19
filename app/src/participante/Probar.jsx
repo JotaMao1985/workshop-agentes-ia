@@ -14,11 +14,16 @@ export default function Probar({ config, titulo = 'Prueba tu agente', grande = f
   const enviar = m => {
     const msg = (m ?? texto).trim();
     if (!msg) return;
+    // La memoria de sesión pasa de un mensaje al siguiente: lo que se pidió recordar y el estado
+    // (una acción pendiente de tu «sí»). Así funciona la confirmación en dos turnos.
     const r = ejecutar(config, msg, memoriaSesion);
-    if (r.memoriaEscrita.length) setMemoriaSesion([...memoriaSesion, ...r.memoriaEscrita]);
+    setMemoriaSesion(r.memoriaSesion);
     setChat([...chat, { u: msg, r }]);
     setTexto('');
   };
+
+  const recuerdos = memoriaSesion.filter(x => x.t !== 'estado');
+  const estado = memoriaSesion.find(x => x.t === 'estado');
 
   return (
     <>
@@ -28,7 +33,8 @@ export default function Probar({ config, titulo = 'Prueba tu agente', grande = f
         <div className="fichas">
           {MISIONES.map((m, i) => <button key={i} className="ficha" onClick={() => enviar(m)}>Misión {i + 1}: {m}</button>)}
         </div>
-        {memoriaSesion.length ? <p className="nota" style={{ marginTop: 8 }}>Memoria de esta conversación: {memoriaSesion.map(x => '«' + x.v + '»').join(', ')}</p> : null}
+        {recuerdos.length ? <p className="nota" style={{ marginTop: 8 }}>Memoria de esta conversación: {recuerdos.map(x => '«' + x.v + '»').join(', ')}</p> : null}
+        {estado ? <p className="nota" style={{ marginTop: 8 }}>Estado en memoria: {estado.v}.</p> : null}
       </section>
       <div className="chat" aria-live="polite">
         {chat.map((x, i) => (

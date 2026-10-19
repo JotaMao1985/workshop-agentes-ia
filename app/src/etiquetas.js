@@ -1,11 +1,11 @@
 export const HERRAMIENTAS = [
   ['calculadora', 'Hace operaciones exactas.'],
-  ['crear_plan_estudio', 'Arma un plan por días y horas.'],
+  ['crear_plan_estudio', 'Skill: un procedimiento empaquetado que el agente sigue para armar un plan por días y horas.'],
   ['buscar_recurso', 'Busca en un catálogo fijo de recursos.'],
   ['resumir_texto', 'Resume el texto que va después de «:».'],
-  ['evaluar_entrega', 'Revisa claridad, evidencia y conclusión.'],
+  ['evaluar_entrega', 'Skill: revisa una entrega con una rúbrica, criterio por criterio (claridad, evidencia y conclusión).'],
   ['enviar_correo', 'Envía un correo (simulado).'],
-  ['consultar_calendario', 'Lee una agenda de ejemplo.'],
+  ['consultar_calendario', 'Llega por MCP, desde el servidor del calendario: lee una agenda de ejemplo.'],
 ];
 export const TIPOS_AGENTE = [
   ['tutor', 'Tutor'], ['organizador', 'Organizador de estudio'], ['evaluador', 'Evaluador de entregas'],

@@ -1,0 +1,6 @@
+{"v": 1, "equipo": "", "nombre": "Agente base", "tipo": "tutor", "proposito": "", "modo": "siempre",
+ "reglas": [], "memoria": [],
+ "herramientas": ["calculadora", "crear_plan_estudio", "buscar_recurso", "resumir_texto", "evaluar_entrega", "enviar_correo", "consultar_calendario"],
+ "adaptada": null,
+ "control": {"envio": "apagado", "args": false, "fuentes": false, "peligrosas": false},
+ "hooks": [], "caso": null}

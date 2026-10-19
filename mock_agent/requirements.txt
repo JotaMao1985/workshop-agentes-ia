@@ -1,0 +1,2 @@
+# El mock no tiene dependencias externas: solo usa la biblioteca estándar de Python (3.10 o superior).
+# Este archivo existe para que el entorno quede declarado; `pip install -r requirements.txt` no instala nada.

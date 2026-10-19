@@ -1,0 +1,190 @@
+{
+  "_nota": "Plantillas de la traza y de las respuestas. {clave} se sustituye; JS y Python usan exactamente estos textos.",
+  "intencion": {
+    "conversacional": "pregunta o conversación",
+    "calcular": "hacer un cálculo",
+    "plan": "armar un plan de estudio",
+    "buscar": "buscar un recurso",
+    "enviar": "enviar un correo",
+    "resumir": "resumir un texto",
+    "evaluar": "evaluar una entrega",
+    "calendario": "consultar el calendario",
+    "peligrosa": "acción destructiva o fuera de propósito",
+    "recordar": "guardar algo en memoria",
+    "regla": "regla del equipo",
+    "adaptada": "usar la herramienta adaptada"
+  },
+  "faltan": {
+    "dias": "cuántos días",
+    "horas": "cuántas horas al día",
+    "tema": "el tema",
+    "destino": "a quién enviarlo",
+    "expresion": "la operación",
+    "texto": "el texto",
+    "detalles": "más detalles"
+  },
+  "supuestos": {
+    "dias": "7",
+    "horas": "2",
+    "tema": "el tema",
+    "destino": "destinatario@ejemplo.edu",
+    "texto": "(texto supuesto)"
+  },
+  "traza": {
+    "recibe": "Recibe el mensaje y arranca el ciclo.",
+    "mem_vacia": "Lee la memoria: está vacía.",
+    "mem_leer": "Lee la memoria: {n} entrada(s).",
+    "mem_usa": "Toma de la memoria: {datos}.",
+    "llm_intencion": "Interpreta la intención: {intencion}.",
+    "llm_regla": "Aplica la instrucción del equipo «{palabra}» → {accion}.",
+    "llm_modo_siempre": "Modo «siempre»: usará una herramienta aunque no haga falta.",
+    "llm_propone": "Propone usar {herramienta}({args}).",
+    "llm_supone": "Le faltaban datos y los supuso: {supuestos}.",
+    "llm_responder": "Propone responder directo, sin herramientas.",
+    "llm_aclarar": "Propone pedir aclaración: falta {faltan}.",
+    "llm_sin_tool": "La herramienta {herramienta} no está activa: intentará responder solo.",
+    "llm_inexistente": "Propone una acción para la que no hay herramienta.",
+    "llm_memoria": "Propone guardar en memoria: «{texto}».",
+    "llm_bloquear": "Su instrucción le dice que no lo haga.",
+    "ctrl_ok": "Revisa antes de actuar: todo en orden.",
+    "ctrl_sin_hook_peligrosa": "Ningún hook revisa acciones peligrosas: pasa sin revisar.",
+    "ctrl_sin_hook_envio": "El hook de autorización está apagado: el envío pasa sin revisar.",
+    "ctrl_sin_hook_args": "Nadie revisa los argumentos supuestos: pasan.",
+    "ctrl_bloq_regla": "Bloquea: el mensaje contiene «{palabra}» (hook del equipo).",
+    "ctrl_bloq_peligrosa": "Bloquea: acción destructiva o fuera de propósito.",
+    "ctrl_bloq_envio": "Bloquea el envío: falta autorización explícita.",
+    "ctrl_bloq_envio_siempre": "Bloquea: este agente no tiene permitido enviar correos.",
+    "ctrl_bloq_confirmar": "Bloquea {herramienta}: el hook del equipo pide confirmación.",
+    "ctrl_bloq_args": "Bloquea {herramienta}: tiene argumentos supuestos ({supuestos}).",
+    "tool_ok": "Ejecuta {herramienta}: {observacion}",
+    "tool_error": "{herramienta} falló: {error}",
+    "orq_bucle": "Observación recibida. ¿Hace falta otra acción? No: a redactar.",
+    "llm_redacta": "Redacta la respuesta.",
+    "llm_inventa": "No tiene una fuente real y redacta una «de memoria».",
+    "llm_afirma": "Redacta como si la acción se hubiera hecho.",
+    "eval_ok": "Evaluador: la respuesta no inventa fuentes.",
+    "eval_corrige": "Evaluador: detectó una fuente inventada y corrigió la respuesta.",
+    "eval_apagado": "Sin evaluador: la respuesta sale sin revisar.",
+    "mem_escribe": "Escribe en memoria: «{texto}».",
+    "mem_estado": "Actualiza el estado: {estado}.",
+    "mem_nada": "Nada nuevo que recordar.",
+    "traza": "Traza completa: {n} pasos."
+  },
+  "respuesta": {
+    "calc": "El resultado de {expr} es {res}.",
+    "calc_error": "No pude calcular eso: {error}.",
+    "calc_aprox": "Calculando de cabeza: más o menos {aprox}.",
+    "plan": "Tu plan para «{tema}»: {lineas}.",
+    "plan_pref": " Lo armé pensando en: {pref}.",
+    "plan_sin_tool": "Te propongo estudiar un poco cada día durante {dias} días, {horas} h diarias.",
+    "buscar": "Te recomiendo: {lista}.",
+    "buscar_inventa": "Te recomiendo «{tema_titulo}: guía completa» (García y López, 2021).",
+    "buscar_honesto": "No encontré fuentes confiables sobre «{tema}» en el catálogo, así que no te recomiendo ninguna. ¿Busco un tema cercano?",
+    "enviar": "Listo: envié {contenido} a {destino} (envío simulado).",
+    "enviar_sin_tool": "No tengo cómo enviar correos: cópialo y envíalo tú.",
+    "resumir": "Resumen: {res}",
+    "evaluar": "Revisión: {res}",
+    "calendario": "Tu agenda: {res}.",
+    "calendario_sin_tool": "No tengo acceso a tu calendario.",
+    "aclarar": "Para hacerlo necesito que me digas: {faltan}.",
+    "bloq_peligrosa": "No puedo hacer eso: es una acción irreversible o fuera de mi propósito.",
+    "bloq_regla": "Esa petición está bloqueada por una regla de este agente.",
+    "bloq_envio": "Antes de enviar necesito tu autorización explícita. ¿Confirmas que lo envíe a {destino}?",
+    "bloq_envio_siempre": "Este agente no tiene permitido enviar correos.",
+    "bloq_confirmar": "Antes de usar {herramienta} necesito que lo confirmes.",
+    "bloq_instruccion": "Prefiero no hacer eso, según mis instrucciones.",
+    "afirma": "Listo, ya lo hice.",
+    "memoria": "Anotado: lo recordaré.",
+    "por_defecto": "Te respondo con lo que sé: soy {nombre} y estoy para {proposito}. ¿Quieres un ejemplo concreto?"
+  },
+  "glosario": [
+    [
+      "ventana de contexto",
+      "La ventana de contexto es todo lo que el modelo puede «ver» en esta conversación; lo que queda por fuera, no lo recuerda."
+    ],
+    [
+      "token",
+      "Un token es un trozo de texto (una palabra o parte de ella). El modelo lee tokens y predice el siguiente."
+    ],
+    [
+      "contexto",
+      "El contexto es el texto que el modelo tiene delante al generar; de él depende lo que responde."
+    ],
+    [
+      "agente",
+      "Un agente usa un modelo de lenguaje dentro de una arquitectura que decide, consulta herramientas, usa memoria, valida y deja traza."
+    ],
+    [
+      "llm",
+      "Un LLM es un modelo que, dado un texto, calcula la probabilidad del siguiente token y así genera lenguaje."
+    ],
+    [
+      "modelo de lenguaje",
+      "Un modelo de lenguaje calcula la probabilidad del siguiente token y así genera texto; por sí solo no ejecuta acciones."
+    ],
+    [
+      "neurona",
+      "Una neurona artificial calcula z = w·x + b y le aplica una activación; aprender es ajustar w y b."
+    ],
+    [
+      "hook",
+      "Un hook es un punto de control antes o después de una acción: puede permitirla, bloquearla o pedir permiso."
+    ],
+    [
+      "mcp",
+      "MCP es un protocolo estándar para conectar herramientas y datos (archivos, calendario, bases de datos) con un agente."
+    ],
+    [
+      "memoria",
+      "La memoria guarda lo que el agente sabe de ti y de la tarea; se lee, se escribe y se olvida."
+    ]
+  ],
+  "proposito_por_tipo": {
+    "tutor": "ayudarte a estudiar",
+    "organizador": "organizar tu estudio",
+    "evaluador": "revisar entregas",
+    "administrativo": "ayudarte con tareas administrativas",
+    "recomendador": "recomendarte recursos",
+    "soporte": "ayudarte con problemas técnicos"
+  },
+  "evaluar_criterios": [
+    "Claridad",
+    "Evidencia",
+    "Conclusión"
+  ],
+  "si": "sí",
+  "no": "no",
+  "contenido_por_defecto": "el texto de esta conversación",
+  "estado_envio": "envío realizado a {destino}",
+  "errores": {
+    "division_cero": "no se puede dividir entre cero",
+    "sintaxis": "la operación no está bien escrita",
+    "grande": "el número es demasiado grande",
+    "potencia": "solo se admiten potencias enteras de 0 a 10"
+  },
+  "accion_regla": {
+    "responder": "responder directo",
+    "aclarar": "pedir aclaración",
+    "bloquear": "no hacerlo",
+    "herramienta": "usar {h}"
+  },
+  "tipo_recurso": {
+    "articulo": "artículo",
+    "video": "video",
+    "libro": "libro",
+    "curso": "curso"
+  },
+  "observacion": {
+    "calc": "resultado = {res}",
+    "plan": "plan de {d} día(s) listo",
+    "buscar": "{n} resultado(s)",
+    "buscar_vacio": "sin resultados",
+    "enviar": "correo enviado a {destino} (simulado)",
+    "resumir": "resumen listo",
+    "evaluar": "revisión lista",
+    "calendario": "{res}"
+  },
+  "separador_plan": "; ",
+  "separador_lista": "; ",
+  "y": " y "
+}

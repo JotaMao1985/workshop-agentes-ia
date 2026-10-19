@@ -1,0 +1,6 @@
+node_modules/
+app/dist/
+_vista/
+pruebas/paridad/salida_*.json
+__pycache__/
+.DS_Store

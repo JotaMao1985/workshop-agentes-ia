@@ -1,0 +1,36 @@
+{
+  "_nota": "Léxico del LLM simulado. Todo va normalizado: minúsculas, sin tildes, palabras separadas por un espacio. Se compara palabra completa.",
+  "orden_intenciones": ["peligrosa", "enviar", "calcular", "plan", "evaluar", "resumir", "buscar", "calendario"],
+  "intenciones": {
+    "peligrosa": ["borra", "borrar", "borres", "elimina", "eliminar", "elimines", "formatea", "formatear", "desinstala", "todos los archivos", "contrasena", "mi cuenta"],
+    "enviar": ["envia", "enviar", "envialo", "enviale", "envie", "enviame", "manda", "mandale", "mandalo", "mandar", "reenvia", "comparte con"],
+    "calcular": ["cuanto es", "cuanto da", "calcula", "calcular", "resultado de", "multiplica", "divide", "porcentaje"],
+    "plan": ["plan de estudio", "plan para estudiar", "planea", "organizame", "sesiones de repaso", "sesiones de estudio", "cronograma", "repaso", "horario de estudio"],
+    "evaluar": ["revisa mi", "revisa esta", "evalua", "califica", "dime si cumple", "retroalimentacion"],
+    "resumir": ["resume", "resumeme", "haz un resumen", "resumir", "sintetiza"],
+    "buscar": ["recomiendame", "recomienda", "recurso", "recursos", "articulo", "fuente", "fuentes", "lectura", "bibliografia", "referencia", "libro", "video", "tutorial", "donde puedo leer"],
+    "calendario": ["calendario", "mi agenda", "que tengo", "cuando tengo", "horario", "disponible"]
+  },
+  "herramienta_de_intencion": {
+    "enviar": "enviar_correo",
+    "calcular": "calculadora",
+    "plan": "crear_plan_estudio",
+    "evaluar": "evaluar_entrega",
+    "resumir": "resumir_texto",
+    "buscar": "buscar_recurso",
+    "calendario": "consultar_calendario"
+  },
+  "recordar": ["recuerda que", "anota que", "guarda que"],
+  "autorizacion": ["autorizo", "te autorizo", "confirmo", "doy permiso", "te doy permiso", "tienes mi permiso", "con mi permiso", "si envia", "si envialo", "si mandalo", "adelante envia"],
+  "numeros": {"un": 1, "una": 1, "uno": 1, "dos": 2, "tres": 3, "cuatro": 4, "cinco": 5, "seis": 6, "siete": 7},
+  "marcadores_tema": {
+    "crear_plan_estudio": ["sobre", "para"],
+    "buscar_recurso": ["sobre", "acerca de", "de", "para"]
+  },
+  "articulos": ["el", "la", "los", "las", "un", "una", "unos", "unas", "mi", "mis", "tu", "tus"],
+  "vacias": ["que", "es", "un", "una", "unos", "unas", "el", "la", "los", "las", "de", "del", "a", "al", "en", "y", "o", "para", "por", "con", "sobre", "acerca", "mi", "mis", "tu", "tus", "su", "sus", "me", "te", "se", "lo", "le", "les", "como", "cual", "cuales", "explicame", "explica", "dime", "hazme", "haz", "quiero", "necesito", "puedes", "podrias", "porfa", "favor", "palabras", "recomiendame", "recomienda", "pasame", "articulo", "fuente", "fuentes", "academica", "academico", "recurso", "recursos", "video", "libro", "lectura", "algo", "bueno", "buena", "sobre"],
+  "herramientas_base": ["calculadora", "crear_plan_estudio", "buscar_recurso", "resumir_texto", "evaluar_entrega", "enviar_correo", "consultar_calendario"],
+  "tipos_agente": ["tutor", "organizador", "evaluador", "administrativo", "recomendador", "soporte"],
+  "tipos_memoria": ["dias", "horas", "tema", "correo_grupo", "preferencia", "otro"],
+  "tipos_recurso": ["cualquiera", "articulo", "video", "libro", "curso"]
+}

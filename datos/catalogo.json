@@ -1,0 +1,21 @@
+{
+  "_nota": "Catálogo fijo de buscar_recurso. Un recurso coincide si al menos el 60 % de las palabras de contenido del tema están en sus etiquetas.",
+  "recursos": [
+    {"titulo": "Redes neuronales desde cero", "tipo": "articulo", "etiquetas": ["redes", "red", "neuronales", "neuronal", "introduccion", "principiantes", "perceptron"]},
+    {"titulo": "Descenso por gradiente, explicado", "tipo": "video", "etiquetas": ["descenso", "gradiente", "entrenamiento", "aprendizaje", "optimizacion"]},
+    {"titulo": "El perceptrón en 10 minutos", "tipo": "video", "etiquetas": ["perceptron", "neurona", "pesos", "sesgo", "activacion"]},
+    {"titulo": "Deep learning: capas y representaciones", "tipo": "articulo", "etiquetas": ["deep", "learning", "aprendizaje", "profundo", "capas", "representaciones"]},
+    {"titulo": "Redes convolucionales para imágenes", "tipo": "curso", "etiquetas": ["cnn", "redes", "convolucionales", "convolucional", "imagenes", "filtros", "vision"]},
+    {"titulo": "ResNet y las conexiones residuales", "tipo": "articulo", "etiquetas": ["resnet", "residuales", "residual", "conexiones", "profundas", "imagenes"]},
+    {"titulo": "Atención y transformers, paso a paso", "tipo": "video", "etiquetas": ["transformer", "transformers", "atencion", "tokens", "lenguaje"]},
+    {"titulo": "¿Qué es un token?", "tipo": "articulo", "etiquetas": ["token", "tokens", "tokenizacion", "contexto", "ventana"]},
+    {"titulo": "Modelos de lenguaje (LLM) para principiantes", "tipo": "libro", "etiquetas": ["llm", "modelos", "modelo", "lenguaje", "generacion", "principiantes"]},
+    {"titulo": "Agentes de IA: herramientas, memoria y control", "tipo": "articulo", "etiquetas": ["agentes", "agente", "herramientas", "memoria", "control", "hooks"]},
+    {"titulo": "Model Context Protocol (MCP) en una página", "tipo": "articulo", "etiquetas": ["mcp", "protocolo", "model", "context", "herramientas"]},
+    {"titulo": "Cómo estudiar para un parcial", "tipo": "video", "etiquetas": ["estudiar", "estudio", "parcial", "examen", "repaso", "tecnicas"]}
+  ],
+  "calendario": "martes libre de 18:00 a 19:00; miércoles con clase de 7:00 a 9:00 y libre de 20:00 a 21:00; jueves con parcial a las 9:00",
+  "temas_plan_redes": ["perceptrón y pesos", "entrenamiento y descenso por gradiente", "capas y representaciones", "CNN y ResNet", "transformers y atención", "ejercicios tipo parcial", "simulacro y repaso"],
+  "temas_plan_general": ["conceptos clave", "ejemplos resueltos", "ejercicios", "repaso de errores", "simulacro", "repaso final", "descanso activo"],
+  "palabras_redes": ["redes", "red", "neuronal", "neuronales", "deep", "perceptron", "transformers"]
+}

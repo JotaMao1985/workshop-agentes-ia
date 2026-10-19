@@ -1,0 +1,8 @@
+{"v": 1, "equipo": "Ejemplo", "nombre": "TutorIA", "tipo": "tutor", "proposito": "Ayudarte a estudiar redes neuronales", "modo": "solo_si_hace_falta",
+ "reglas": [{"p": "parcial, examen", "a": "herramienta:crear_plan_estudio"}],
+ "memoria": [{"t": "dias", "v": "2"}, {"t": "horas", "v": "1"}, {"t": "preferencia", "v": "ejemplos prácticos"}],
+ "herramientas": ["calculadora", "crear_plan_estudio", "buscar_recurso", "resumir_texto", "evaluar_entrega", "enviar_correo", "consultar_calendario"],
+ "adaptada": {"n": "buscar_video", "b": "buscar_recurso", "p": "video, videos", "f": "video"},
+ "control": {"envio": "pedir", "args": true, "fuentes": true, "peligrosas": true},
+ "hooks": [{"k": "contiene", "v": "contraseña, clave"}],
+ "caso": {"m": "Recomiéndame un video sobre descenso por gradiente", "e": "herramienta:buscar_video"}}

@@ -124,3 +124,26 @@ describe('marcador y desempate', () => {
     expect(ranking({ e })[0].iib).toBe(40);
   });
 });
+
+import { claveEquipo, equipoDe, sanearEquipos } from '../marcador.js';
+describe('nombres de equipo hostiles en el modo facilitador', () => {
+  it('«constructor», «toString» y «__proto__» no rompen el marcador', () => {
+    let eq = {};
+    for (const n of ['constructor', 'toString', '__proto__', 'hasOwnProperty', 'Normal']) {
+      const k = claveEquipo(n);
+      eq = { ...eq, [k]: { ...equipoDe(eq, n), retos: [6, 6, 6, 6, 6] } };
+    }
+    const r = ranking(sanearEquipos(eq));
+    expect(r).toHaveLength(5);
+    expect(r.every(f => f.parteI === 30)).toBe(true);
+  });
+  it('sanearEquipos descarta basura y recorta puntajes', () => {
+    const s = sanearEquipos({ a: { nombre: 'A', retos: [99, -3, 'x'], rubrica: [7], iibManual: 80, config: 'no' }, b: 5, c: { nombre: '' } });
+    const e = Object.values(s);
+    expect(e).toHaveLength(1);
+    expect(e[0].retos).toEqual([6, 0, null, null, null]);
+    expect(e[0].rubrica[0]).toBe(5);
+    expect(e[0].iibManual).toBe(40);
+    expect(e[0].config).toBeNull();
+  });
+});

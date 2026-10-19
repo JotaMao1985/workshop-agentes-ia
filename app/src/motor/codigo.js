@@ -2,6 +2,7 @@
 // Código corto de respaldo: 6 caracteres que llevan el puntaje de II.B y una suma de control ligada al equipo.
 // Espejo: mock_agent/main.py (decodificar) y mock_agent/codigo.py
 import pako from 'pako';
+import { normalizar } from './texto.js';
 
 const B32 = '0123456789ABCDEFGHJKMNPQRSTVWXYZ';
 
@@ -47,7 +48,7 @@ export function fnv1a(s) {
 
 export function codigoCorto(equipo, puntaje) {
   const p = Math.max(0, Math.min(40, Math.round(puntaje)));
-  const h = fnv1a(equipo.trim().toLowerCase() + '|' + p) & 0xffffff;
+  const h = fnv1a(normalizar(equipo) + '|' + p) & 0xffffff;
   let v = p * 0x1000000 + h;
   let s = '';
   for (let i = 0; i < 6; i++) { s = B32[v % 32] + s; v = Math.floor(v / 32); }

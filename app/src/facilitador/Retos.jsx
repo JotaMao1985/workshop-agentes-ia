@@ -1,4 +1,4 @@
-import { claveEquipo } from '../motor/marcador.js';
+import { claveEquipo, equipoDe } from '../motor/marcador.js';
 
 const TITULOS = ['¿Qué necesita un agente?', '¿Qué aprende una neurona?', '¿Qué arquitectura escogerías?', '¿Puede hacerlo un LLM solo?', '¿Qué componente falta?'];
 
@@ -7,7 +7,7 @@ export default function Retos({ equipos, setEquipos }) {
   const fijar = (e, i, v) => {
     const k = claveEquipo(e.nombre);
     const n = v === '' ? null : Math.max(0, Math.min(6, Math.round(Number(v))));
-    setEquipos(prev => ({ ...prev, [k]: { ...prev[k], retos: prev[k].retos.map((x, j) => (j === i ? (Number.isFinite(n) ? n : null) : x)) } }));
+    setEquipos(prev => ({ ...prev, [k]: { ...equipoDe(prev, e.nombre), retos: equipoDe(prev, e.nombre).retos.map((x, j) => (j === i ? (Number.isFinite(n) ? n : null) : x)) } }));
   };
   if (!lista.length) return <div className="tarjeta"><p>Primero agrega equipos en «Importar».</p></div>;
   return (

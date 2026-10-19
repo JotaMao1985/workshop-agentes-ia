@@ -35,6 +35,7 @@ export default function Entregar({ equipo, config, registro }) {
       {ver === 'A' ? (
         <section className="tarjeta">
           <h3>Registro II.A</h3>
+          {bytesCarga(cargaA) > 800 ? <div className="aviso-caja">El QR quedó muy cargado ({bytesCarga(cargaA)} bytes): si cuesta leerlo, acorta los textos del registro.</div> : null}
           <QR texto={cargaA} titulo="QR del registro de la II.A" />
           <div className="fila" style={{ justifyContent: 'space-between' }}><span className="nota">{bytesCarga(cargaA)} bytes</span><Copiar texto={cargaA} /></div>
           <details><summary>Ver el código</summary><div className="codigo">{cargaA}</div></details>
@@ -43,6 +44,7 @@ export default function Entregar({ equipo, config, registro }) {
       {ver === 'B' ? (
         <section className="tarjeta">
           <h3>Mi agente II.B</h3>
+          {bytesCarga(cargaB) > 800 ? <div className="aviso-caja">El QR quedó muy cargado ({bytesCarga(cargaB)} bytes) y puede costar leerlo. Si falla, acorta los textos de tu agente o usa el código corto.</div> : null}
           <QR texto={cargaB} titulo="QR de la configuración del agente" />
           <div className="fila" style={{ justifyContent: 'space-between' }}><span className="nota">{bytesCarga(cargaB)} bytes</span><Copiar texto={cargaB} /></div>
           <details><summary>Ver el código</summary><div className="codigo">{cargaB}</div></details>

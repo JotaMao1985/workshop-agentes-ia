@@ -8,7 +8,9 @@ App web del **workshop «Agentes de IA»** (Universidad El Bosque, 20 de octubre
 
 Un agente se organiza en 5 bloques: **LLM** (interpreta y propone; no ejecuta), **Orquestador** (decide el siguiente paso), **Herramientas** (tools, skills y MCP), **Memoria** (incluye el estado) y **Control** (hooks antes y después de actuar, evaluador y traza). La app deja ver la **traza paso a paso** de cada mensaje:
 
-> Usuario → Orquestador → Memoria → LLM decide → Control (antes) → Herramienta → Observación ↺ → LLM redacta → Control (después) → Respuesta → Memoria → Traza
+> Usuario → Orquestador → Memoria (leer) → LLM decide → Control (antes) → Herramienta → Observación ↺ → LLM redacta → Control (después) → Respuesta → Memoria (escribir) → Traza
+>
+> Si no hace falta ninguna herramienta, del «LLM decide» se pasa directo a «LLM redacta».
 
 En la app cada equipo, desde el celular:
 

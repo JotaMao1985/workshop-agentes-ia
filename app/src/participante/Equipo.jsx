@@ -19,14 +19,14 @@ export default function Equipo({ equipo, setEquipo, ir }) {
           <button className="boton" disabled={!equipo.trim()} onClick={() => ir('mi-agente')}>Ir a «Mi agente»</button>
           <button className="boton secundario" disabled={!equipo.trim()} onClick={() => ir('registro')}>Ir al «Registro II.A»</button>
         </div>
-        <p className="nota">No se guardan datos personales: solo el nombre del equipo, y solo en este celular.</p>
+        <p className="nota">No te pedimos datos personales: usa datos ficticios (correos de ejemplo, nada real). Todo se guarda solo en este celular y viaja en el QR solo cuando entregas.</p>
       </section>
       <section className="tarjeta">
         <h2>Los 5 bloques de un agente</h2>
         <ul>
           {BLOQUES.map(([b, d]) => <li key={b}><b>{b}:</b> {d}</li>)}
         </ul>
-        <p className="nota">El ciclo: Usuario → Orquestador → Memoria → LLM decide → Control (antes) → Herramienta → Observación ↺ → LLM redacta → Control (después) → Respuesta → Memoria → Traza. Si no hace falta ninguna herramienta, del «LLM decide» se pasa directo a «LLM redacta».</p>
+        <p className="nota">El ciclo: Usuario → Orquestador → Memoria (leer) → LLM decide → Control (antes) → Herramienta → Observación ↺ → LLM redacta → Control (después) → Respuesta → Memoria (escribir) → Traza. Si no hace falta ninguna herramienta, del «LLM decide» se pasa directo a «LLM redacta».</p>
       </section>
       <section className="tarjeta">
         <h2>Puntaje del día</h2>

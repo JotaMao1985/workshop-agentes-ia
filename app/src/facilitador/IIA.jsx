@@ -8,8 +8,8 @@ const nombres = lista => Object.fromEntries(lista);
 export default function IIA({ equipos, setEquipos }) {
   const lista = Object.values(equipos);
   const [sel, setSel] = useState(lista.length ? claveEquipo(lista[0].nombre) : '');
-  const e = equipos[sel];
-  const fijar = (i, v) => setEquipos(prev => ({ ...prev, [sel]: { ...prev[sel], rubrica: prev[sel].rubrica.map((x, j) => (j === i ? v : x)) } }));
+  const e = Object.prototype.hasOwnProperty.call(equipos, sel) ? equipos[sel] : null;
+  const fijar = (i, v) => setEquipos(prev => (Object.prototype.hasOwnProperty.call(prev, sel) ? { ...prev, [sel]: { ...prev[sel], rubrica: prev[sel].rubrica.map((x, j) => (j === i ? v : x)) } } : prev));
   if (!lista.length) return <div className="tarjeta"><p>Primero importa los registros en «Importar».</p></div>;
   const reg = e && e.registro;
   const F = nombres(FICHAS_FLUJO), H = nombres(HERRAMIENTAS_CASO), M = nombres(MEMORIA_CASO), C = nombres(CONTROL_CASO), K = nombres(ROLES);

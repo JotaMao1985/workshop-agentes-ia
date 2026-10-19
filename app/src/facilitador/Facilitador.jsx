@@ -1,4 +1,5 @@
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
+import { sanearEquipos } from '../motor/marcador.js';
 import { usePersistente } from '../almacen.js';
 import { fnv1a } from '../motor/codigo.js';
 import Importar from './Importar.jsx';
@@ -18,7 +19,8 @@ export default function Facilitador() {
   const [pin, setPin] = useState('');
   const [error, setError] = useState(false);
   const [pestana, setPestana] = useState('importar');
-  const [equipos, setEquipos] = usePersistente('taller_fac_equipos_v1', {});
+  const [equiposCrudos, setEquipos] = usePersistente('taller_fac_equipos_v2', {});
+  const equipos = useMemo(() => sanearEquipos(equiposCrudos), [equiposCrudos]);
   const [revelar, setRevelar] = useState(false);
 
   if (!ok) {

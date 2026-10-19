@@ -5,6 +5,8 @@ import json
 import re
 import zlib
 
+from texto import normalizar
+
 B32 = "0123456789ABCDEFGHJKMNPQRSTVWXYZ"
 
 
@@ -27,7 +29,7 @@ def fnv1a(s):
 
 def codigo_corto(equipo, puntaje):
     p = max(0, min(40, int(round(puntaje))))
-    h = fnv1a(equipo.strip().lower() + "|" + str(p)) & 0xFFFFFF
+    h = fnv1a(normalizar(equipo) + "|" + str(p)) & 0xFFFFFF
     v = p * 0x1000000 + h
     s = ""
     for _ in range(6):

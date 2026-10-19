@@ -4,7 +4,7 @@ import { decodificar, leerCodigoCorto } from '../motor/codigo.js';
 import { sanearConfig } from '../motor/config.js';
 import { sanearRegistro } from '../motor/registro.js';
 import { puntajeIIB } from '../motor/puntaje.js';
-import { claveEquipo, equipoVacio } from '../motor/marcador.js';
+import { claveEquipo, equipoDe } from '../motor/marcador.js';
 import { Texto } from '../componentes/Campos.jsx';
 
 function leerQRDeCanvas(ctx, w, h) {
@@ -30,13 +30,13 @@ export default function Importar({ equipos, setEquipos }) {
         const reg = sanearRegistro(datos);
         if (!reg.equipo) throw new Error('El registro no trae el nombre del equipo.');
         const k = claveEquipo(reg.equipo);
-        setEquipos(prev => ({ ...prev, [k]: { ...(prev[k] || equipoVacio(reg.equipo)), registro: reg } }));
+        setEquipos(prev => ({ ...prev, [k]: { ...equipoDe(prev, reg.equipo), registro: reg } }));
         setMsg({ ok: true, t: `Registro II.A de «${reg.equipo}» importado.` });
       } else {
         const cfg = sanearConfig(datos);
         if (!cfg.equipo) throw new Error('La configuración no trae el nombre del equipo.');
         const k = claveEquipo(cfg.equipo);
-        setEquipos(prev => ({ ...prev, [k]: { ...(prev[k] || equipoVacio(cfg.equipo)), config: cfg } }));
+        setEquipos(prev => ({ ...prev, [k]: { ...equipoDe(prev, cfg.equipo), config: cfg } }));
         setMsg({ ok: true, t: `Agente II.B de «${cfg.equipo}» importado: ${puntajeIIB(cfg).total}/40 con la evaluación.` });
       }
       return true;
@@ -103,7 +103,7 @@ export default function Importar({ equipos, setEquipos }) {
     const p = leerCodigoCorto(cortoEq, corto);
     if (p === null) { setMsg({ ok: false, t: 'El código corto no coincide con ese nombre de equipo.' }); return; }
     const k = claveEquipo(cortoEq);
-    setEquipos(prev => ({ ...prev, [k]: { ...(prev[k] || equipoVacio(cortoEq)), iibManual: p } }));
+    setEquipos(prev => ({ ...prev, [k]: { ...equipoDe(prev, cortoEq), iibManual: p } }));
     setMsg({ ok: true, t: `II.B de «${cortoEq.trim()}» registrado con el código corto: ${p}/40.` });
     setCorto('');
   };
@@ -132,7 +132,7 @@ export default function Importar({ equipos, setEquipos }) {
         <h3 style={{ marginTop: 16 }}>Agregar un equipo a mano</h3>
         <div className="fila">
           <input type="text" value={nuevo} maxLength={30} onChange={e => setNuevo(e.target.value)} placeholder="Nombre del equipo" style={{ flex: 1, minWidth: 0 }} aria-label="Nombre del equipo nuevo" />
-          <button className="boton secundario" disabled={!nuevo.trim()} onClick={() => { const k = claveEquipo(nuevo); setEquipos(prev => ({ ...prev, [k]: prev[k] || equipoVacio(nuevo) })); setNuevo(''); }}>Agregar</button>
+          <button className="boton secundario" disabled={!nuevo.trim()} onClick={() => { const k = claveEquipo(nuevo); setEquipos(prev => ({ ...prev, [k]: equipoDe(prev, nuevo) })); setNuevo(''); }}>Agregar</button>
         </div>
       </section>
       <section className="tarjeta">

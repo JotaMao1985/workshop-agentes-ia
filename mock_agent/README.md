@@ -2,6 +2,9 @@
 
 Un agente de IA **simulado**: no usa un LLM real, ni créditos, ni claves de API. El «LLM» son reglas (`llm_mock.py`), las herramientas están simuladas (`tools.py`) y el ciclo completo está en `agent.py`. Solo usa la biblioteca estándar (Python 3.10 o superior).
 
+
+**Autores:** Javier Mauricio Sierra y Andrés Mauricio Suárez Mantilla.
+
 ```bash
 python main.py                      # conversa con el agente base
 python main.py --escenarios         # 7 escenarios de práctica y 7 de evaluación, con puntaje

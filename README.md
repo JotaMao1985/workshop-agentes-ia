@@ -4,6 +4,8 @@ App web del **Workshop «Agentes de IA»** (Universidad El Bosque, 20 de octubre
 
 **Abrir la app:** https://jotamao1985.github.io/workshop-agentes-ia/
 
+**Autores:** Javier Mauricio Sierra y Andrés Mauricio Suárez Mantilla.
+
 ## Qué hace
 
 Un agente se organiza en 5 bloques: **LLM** (interpreta y propone; no ejecuta), **Orquestador** (decide el siguiente paso), **Herramientas** (tools, skills y MCP), **Memoria** (incluye el estado) y **Control** (hooks antes y después de actuar, evaluador y traza). La app deja ver la **traza paso a paso** de cada mensaje:

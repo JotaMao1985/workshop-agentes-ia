@@ -54,7 +54,7 @@ export default function App() {
         {pestana === 'probar' ? <Probar config={config} /> : null}
         {pestana === 'escenarios' ? <Escenarios config={config} /> : null}
         {pestana === 'entregar' ? <Entregar equipo={equipo} config={config} registro={registro} /> : null}
-        <p className="pie">Workshop «Agentes de IA» · Universidad El Bosque · martes 20 de octubre de 2026<br />Todo se guarda solo en este celular. <a href="#/facilitador">Facilitador</a></p>
+        <p className="pie">Workshop «Agentes de IA» · Universidad El Bosque · martes 20 de octubre de 2026<br />Autores: Javier Mauricio Sierra y Andrés Mauricio Suárez Mantilla<br />Todo se guarda solo en este celular. <a href="#/facilitador">Facilitador</a></p>
       </main>
     </>
   );

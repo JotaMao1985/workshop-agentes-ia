@@ -6,6 +6,35 @@ import { sanearRegistro } from '../motor/registro.js';
 import { puntajeIIB } from '../motor/puntaje.js';
 import { claveEquipo, equipoDe } from '../motor/marcador.js';
 import { Texto } from '../componentes/Campos.jsx';
+import { estadoImport } from '../vista/facilitador.js';
+
+// Pitido corto al importar: el facilitador mira el celular del equipo, no la pantalla del portátil.
+// El contexto de audio se crea con un clic (los navegadores no dejan sonar sin un gesto del usuario).
+function useAudio() {
+  const ctx = useRef(null);
+  useEffect(() => () => { try { ctx.current?.close(); } catch { /* nada */ } }, []);
+  const preparar = () => {
+    try {
+      const C = window.AudioContext || window.webkitAudioContext;
+      if (!C) return;
+      if (!ctx.current) ctx.current = new C();
+      if (ctx.current.state === 'suspended') ctx.current.resume();
+    } catch { /* sin audio */ }
+  };
+  const pitido = () => {
+    try {
+      const c = ctx.current;
+      if (!c) return;
+      const o = c.createOscillator(), g = c.createGain();
+      o.frequency.value = 880;
+      g.gain.setValueAtTime(0.18, c.currentTime);
+      g.gain.exponentialRampToValueAtTime(0.001, c.currentTime + 0.15);
+      o.connect(g); g.connect(c.destination);
+      o.start(); o.stop(c.currentTime + 0.16);
+    } catch { /* sin audio */ }
+  };
+  return { preparar, pitido };
+}
 
 function leerQRDeCanvas(ctx, w, h) {
   const img = ctx.getImageData(0, 0, w, h);
@@ -22,26 +51,36 @@ export default function Importar({ equipos, setEquipos }) {
   const [nuevo, setNuevo] = useState('');
   const video = useRef(null);
   const ultimo = useRef({ t: '', at: 0 });
+  // El bucle de la cámara guarda el «importar» del primer render: los equipos se leen de aquí, siempre al día.
+  const equiposRef = useRef(equipos);
+  equiposRef.current = equipos;
+  const { preparar, pitido } = useAudio();
+  const avisar = m => setMsg(prev => ({ ...m, n: (prev?.n || 0) + 1 }));
+  const verbo = { nuevo: 'importado', actualizado: 'actualizado (reemplaza al anterior)', igual: 'ya estaba (sin cambios)' };
 
   const importar = texto => {
     try {
+      if (String(texto || '').includes('#/probador/')) throw new Error('ese QR es el de «Probar en otro celular». Pídanle al equipo que abra «Entregar».');
       const { tipo, datos } = decodificar(texto);
       if (tipo === 'A') {
         const reg = sanearRegistro(datos);
         if (!reg.equipo) throw new Error('El registro no trae el nombre del equipo.');
         const k = claveEquipo(reg.equipo);
+        const est = estadoImport(equipoDe(equiposRef.current, reg.equipo).registro, reg);
         setEquipos(prev => ({ ...prev, [k]: { ...equipoDe(prev, reg.equipo), registro: reg } }));
-        setMsg({ ok: true, t: `Registro II.A de «${reg.equipo}» importado.` });
+        avisar({ ok: true, t: `Registro II.A de «${reg.equipo}» ${verbo[est]}.` });
       } else {
         const cfg = sanearConfig(datos);
         if (!cfg.equipo) throw new Error('La configuración no trae el nombre del equipo.');
         const k = claveEquipo(cfg.equipo);
+        const est = estadoImport(equipoDe(equiposRef.current, cfg.equipo).config, cfg);
         setEquipos(prev => ({ ...prev, [k]: { ...equipoDe(prev, cfg.equipo), config: cfg } }));
-        setMsg({ ok: true, t: `Agente II.B de «${cfg.equipo}» importado: ${puntajeIIB(cfg).total}/40 con la evaluación.` });
+        avisar({ ok: true, t: `Agente II.B de «${cfg.equipo}» ${verbo[est]}: ${puntajeIIB(cfg).total}/40 con la evaluación.` });
       }
+      pitido();
       return true;
     } catch (e) {
-      setMsg({ ok: false, t: 'No se pudo leer el código: ' + (e.message === 'formato' ? 'no es un código válido de esta app (¿quedó incompleto al copiarlo?).' : e.message) });
+      avisar({ ok: false, t: 'No se pudo leer el código: ' + (e.message === 'formato' ? 'no es un código válido de esta app (¿quedó incompleto al copiarlo?).' : e.message) });
       return false;
     }
   };
@@ -75,7 +114,7 @@ export default function Importar({ equipos, setEquipos }) {
         };
         ciclo();
       })
-      .catch(e => { setMsg({ ok: false, t: 'No se pudo abrir la cámara: ' + e.message + '. Usa «Subir imagen» o «Pegar código».' }); setCamara(false); });
+      .catch(e => { avisar({ ok: false, t: 'No se pudo abrir la cámara: ' + e.message + '. Usa «Subir imagen» o «Pegar código».' }); setCamara(false); });
     return () => { vivo = false; clearTimeout(timer); if (flujo) flujo.getTracks().forEach(t => t.stop()); };
   }, [camara]);
 
@@ -94,41 +133,44 @@ export default function Importar({ equipos, setEquipos }) {
         if (t) break;
       }
       URL.revokeObjectURL(url);
-      if (t) importar(t); else setMsg({ ok: false, t: 'No encontré un QR en esa imagen.' });
+      if (t) importar(t); else avisar({ ok: false, t: 'No encontré un QR en esa imagen.' });
     };
     img.src = url;
   };
 
   const usarCorto = () => {
     const p = leerCodigoCorto(cortoEq, corto);
-    if (p === null) { setMsg({ ok: false, t: 'El código corto no coincide con ese nombre de equipo.' }); return; }
+    if (p === null) { avisar({ ok: false, t: 'El código corto no coincide con ese nombre de equipo.' }); return; }
     const k = claveEquipo(cortoEq);
     setEquipos(prev => ({ ...prev, [k]: { ...equipoDe(prev, cortoEq), iibManual: p } }));
-    setMsg({ ok: true, t: `Puntaje de II.B de «${cortoEq.trim()}» registrado con el código corto: ${p}/40.` });
+    avisar({ ok: true, t: `Puntaje de II.B de «${cortoEq.trim()}» registrado con el código corto: ${p}/40.` });
+    pitido();
     setCorto('');
   };
 
   const lista = Object.values(equipos);
   return (
     <>
-      {msg ? <div className={msg.ok ? 'exito-caja' : 'error-caja'} role="status">{msg.t}</div> : null}
+      <div role="status" aria-live="polite">
+        {msg ? <div key={msg.n} className={(msg.ok ? 'exito-caja' : 'error-caja') + (msg.ok ? ' destello' : '')}>{msg.t}</div> : null}
+      </div>
       <section className="tarjeta">
         <h2>Escanear con la cámara</h2>
         <p className="nota">Cada equipo acerca su celular con el QR (registro II.A o agente II.B). Se importa solo.</p>
-        <button className="boton naranja" onClick={() => setCamara(!camara)}>{camara ? 'Detener cámara' : 'Encender cámara'}</button>
+        <button className="boton naranja" onClick={() => { preparar(); setCamara(!camara); }}>{camara ? 'Detener cámara' : 'Encender cámara'}</button>
         {camara ? <video ref={video} className="camara" muted playsInline style={{ marginTop: 10 }} /> : null}
       </section>
       <section className="tarjeta">
         <h2>Otras formas</h2>
-        <label className="campo"><span>Subir imagen o captura del QR</span><input type="file" accept="image/*" onChange={e => subirImagen(e.target.files[0])} /></label>
+        <label className="campo"><span>Subir imagen o captura del QR</span><input type="file" accept="image/*" onClick={preparar} onChange={e => subirImagen(e.target.files[0])} /></label>
         <Texto etiqueta="Pegar código (A1.… o B1.…)" valor={pegado} alCambiar={setPegado} max={3000} area />
-        <button className="boton secundario" disabled={!pegado.trim()} onClick={() => { if (importar(pegado)) setPegado(''); }}>Importar código</button>
+        <button className="boton secundario" disabled={!pegado.trim()} onClick={() => { preparar(); if (importar(pegado)) setPegado(''); }}>Importar código</button>
         <h3 style={{ marginTop: 16 }}>Código corto de respaldo (solo II.B)</h3>
         <div className="rejilla-2">
           <Texto etiqueta="Nombre exacto del equipo" valor={cortoEq} alCambiar={setCortoEq} max={30} />
           <Texto etiqueta="Código de 6 caracteres" valor={corto} alCambiar={v => setCorto(v.toUpperCase())} max={6} />
         </div>
-        <button className="boton secundario" disabled={!cortoEq.trim() || corto.length !== 6} onClick={usarCorto}>Registrar código corto</button>
+        <button className="boton secundario" disabled={!cortoEq.trim() || corto.length !== 6} onClick={() => { preparar(); usarCorto(); }}>Registrar código corto</button>
         <h3 style={{ marginTop: 16 }}>Agregar un equipo a mano</h3>
         <div className="fila">
           <input type="text" value={nuevo} maxLength={30} onChange={e => setNuevo(e.target.value)} placeholder="Nombre del equipo" style={{ flex: 1, minWidth: 0 }} aria-label="Nombre del equipo nuevo" />

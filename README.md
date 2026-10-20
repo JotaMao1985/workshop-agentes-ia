@@ -27,7 +27,7 @@ Cuando Control (antes) bloquea una acción porque falta autorización («Pedir a
 - Una negación («no», «cancela», «mejor no», «no lo envíes»…) borra el estado y el agente responde «Entendido: no lo envío.».
 - Cualquier otro mensaje descarta el estado (la traza lo dice) y se procesa normal.
 - Con «Bloquear siempre» no queda nada pendiente: el bloqueo es definitivo. El bloqueo de acciones peligrosas sigue aplicando siempre, y los demás controles (argumentos supuestos, hooks propios) se revisan otra vez al confirmar.
-- Las baterías de escenarios corren cada mensaje con la memoria de sesión vacía, así que el estado no cambia el puntaje. En «Probar», en cambio, la memoria de la sesión pasa de un mensaje al siguiente hasta que se toca «Limpiar».
+- Las baterías de escenarios corren cada mensaje con la memoria de sesión vacía, así que el estado no cambia el puntaje. En «Probar», en cambio, la memoria de la sesión pasa de un mensaje al siguiente hasta que se toca «Nueva conversación». Mientras hay una acción pendiente, «Probar» la muestra junto al campo de texto con los botones «Sí, confirmo» y «No».
 
 Es lo que enseña el Reto 5: un agente que «te pidió permiso tres veces porque no sabía que ya se lo habías dado» no tiene estado en su memoria.
 
@@ -37,6 +37,16 @@ En la app cada equipo, desde el celular:
 2. configura su agente sin escribir código: identidad, instrucciones, memoria, herramientas, hooks y un caso de prueba;
 3. lo prueba en un chat y corre 7 escenarios comunes;
 4. entrega su registro y su agente con un QR.
+
+Ayudas de la interfaz (vista, sin tocar el motor; código en `app/src/vista/`):
+
+- **Marcador vivo** en «Mi agente»: puntos de práctica (escenarios y personalización) siempre a la vista, y un aviso cuando un cambio hace pasar o romper un escenario («✓ P4 … ahora pasa (+4)», «✗ P5 … dejó de pasar (−4)»).
+- **Dueños de bloque**: cada sección de «Mi agente» lleva el rol de la II.A que la configura, en el color de su bloque, para que el celular rote dentro del equipo.
+- **Ruta de colores**: debajo de cada respuesta, los bloques que recorrió el mensaje, con su sigla y en los colores del kit.
+- **Registro II.A**: fichas en los colores del kit; se quita cualquier paso tocándolo, y «Vaciar» pide confirmación.
+- **Entregar**: lista lo que quedó vacío y avisa si el registro o el agente cambiaron después de mostrar su QR.
+- **Celular probador**: «Probar» › «Probar en otro celular» muestra un QR con un enlace `#/probador/…` que abre en otro celular una copia del agente solo para probar (no se guarda, no se edita ni se entrega). La «versión» de 4 caracteres permite comprobar que los dos celulares tienen el mismo agente.
+- **Facilitador**: pitido y destello al importar («importado», «actualizado» o «ya estaba»), «Calificadas n/N» y «Siguiente equipo →» en la rúbrica II.A, y el **torneo de casos** en «II.B»: cada agente contra el caso de prueba propio de los otros equipos (mención, sin puntos).
 
 El **agente base** viene incompleto a propósito: envía correos sin permiso, inventa fuentes y supone datos que nadie le dio. Arreglarlo es parte del taller. La evaluación final usa frases distintas de las de práctica para premiar agentes que generalizan y no los que memorizan frases.
 

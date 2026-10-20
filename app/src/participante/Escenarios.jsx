@@ -1,5 +1,5 @@
 import { useMemo } from 'react';
-import Traza from '../componentes/Traza.jsx';
+import Traza, { RutaTraza } from '../componentes/Traza.jsx';
 import { Estado } from '../componentes/Campos.jsx';
 import { correrBateria, personalizacion } from '../motor/puntaje.js';
 
@@ -27,6 +27,7 @@ export default function Escenarios({ config }) {
             </div>
             <div className="msg">«{p.mensaje}»</div>
             <div>→ {p.resultado.respuesta}</div>
+            <RutaTraza pasos={p.resultado.traza} />
             <details>
               <summary>Ver la traza</summary>
               <Traza pasos={p.resultado.traza} />

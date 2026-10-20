@@ -1,10 +1,71 @@
-import { useMemo } from 'react';
-import { Texto, Lista, Interruptor, Estado } from '../componentes/Campos.jsx';
-import { HERRAMIENTAS, TIPOS_AGENTE, TIPOS_MEMORIA, TIPOS_RECURSO, etiquetaAccion, etiquetaEspera } from '../etiquetas.js';
+import { useEffect, useMemo, useRef, useState } from 'react';
+import { Texto, Lista, Interruptor } from '../componentes/Campos.jsx';
+import { HERRAMIENTAS, TIPOS_AGENTE, TIPOS_MEMORIA, TIPOS_RECURSO, BLOQUES, DUENOS, etiquetaAccion, etiquetaEspera } from '../etiquetas.js';
 import { LIMITES, configBase, nombreAdaptadaValido } from '../motor/config.js';
-import { personalizacion } from '../motor/puntaje.js';
+import { useDiferido } from '../componentes/ganchos.js';
+import { medir, diferencias } from '../vista/marcadorVivo.js';
 
-export default function MiAgente({ config, setConfig }) {
+// A qué sección lleva cada ficha de personalización.
+const SECCION = { identidad: 'sec-identidad', instrucciones: 'sec-instrucciones', memoria: 'sec-memoria', adaptada: 'sec-adaptada', hook: 'sec-hooks', caso: 'sec-caso' };
+
+const menosMovimiento = () => { try { return window.matchMedia('(prefers-reduced-motion: reduce)').matches; } catch { return false; } };
+
+// Lleva a una sección dejando a la vista su título, debajo de la cabecera y del marcador pegados.
+function irA(id) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  const barra = document.querySelector('.barra-marcador');
+  const off = barra ? (parseFloat(getComputedStyle(barra).top) || 0) + barra.offsetHeight + 10 : 100;
+  // Primero el foco (sin mover), luego el desplazamiento: enfocar después corta el desplazamiento suave.
+  try { el.focus({ preventScroll: true }); } catch { /* sin foco */ }
+  // Sin pasarse del final de la página: algunos navegadores no hacen el desplazamiento suave si el destino se pasa.
+  const max = Math.max(0, document.documentElement.scrollHeight - window.innerHeight);
+  const top = Math.min(max, Math.max(0, el.getBoundingClientRect().top + window.scrollY - off));
+  window.scrollTo({ top, behavior: menosMovimiento() ? 'auto' : 'smooth' });
+}
+
+// Título de sección con su dueño de bloque: quien hizo ese rol en la II.A.
+function Titulo({ id, dueno, children }) {
+  const b = DUENOS[dueno];
+  return (
+    <div className="seccion-titulo">
+      <h2 id={id} tabIndex={-1}>{children}</h2>
+      <span className="dueno" data-b={b}><span className="oculto-visual">La configura: </span>{BLOQUES[b]}</span>
+    </div>
+  );
+}
+
+// Marcador vivo: puntaje de práctica a la vista mientras configuran, y aviso de lo que cambió.
+function Marcador({ m, viejo }) {
+  const previo = useRef(null);
+  const reloj = useRef(null);
+  const [avisos, setAvisos] = useState([]);
+  useEffect(() => {
+    const d = diferencias(previo.current, m);
+    previo.current = m;
+    if (!d.length) return;
+    setAvisos(d);
+    clearTimeout(reloj.current);
+    reloj.current = setTimeout(() => setAvisos([]), 4500);
+  }, [m]);
+  useEffect(() => () => clearTimeout(reloj.current), []);
+  return (
+    <div className="barra-marcador">
+      <div className="cifras">
+        <span>Escenarios <b>{m.esc}</b>/28</span>
+        <span>Personalización <b>{m.pers}</b>/12</span>
+        <span className="version" title="Cambia con cada ajuste: sirve para comparar con el celular probador">versión {m.version}</span>
+      </div>
+      {viejo ? <div className="viejo">Cambiaste tu agente después de mostrar el QR: si ya lo escanearon, vuelve a mostrarlo en <a href="#/entregar">«Entregar»</a>.</div> : null}
+      <div className="barra-aviso" role="status" aria-live="polite" aria-atomic="true">
+        {avisos.slice(0, 2).map(a => <div key={a.texto} className={a.si ? 'si' : 'no'}>{a.texto}</div>)}
+        {avisos.length > 2 ? <div className="mas">y {avisos.length - 2} cambio{avisos.length - 2 > 1 ? 's' : ''} más: míralos en «Escenarios»</div> : null}
+      </div>
+    </div>
+  );
+}
+
+export default function MiAgente({ config, setConfig, equipo = '', qrMostrado = {} }) {
   const c = config;
   const set = (k, v) => setConfig({ ...c, [k]: v });
   const setCtrl = (k, v) => setConfig({ ...c, control: { ...c.control, [k]: v } });
@@ -13,7 +74,9 @@ export default function MiAgente({ config, setConfig }) {
     ...herrs.map(h => ['herramienta:' + h, etiquetaAccion('herramienta:' + h)])];
   const esperas = [['sin_herramienta', etiquetaEspera('sin_herramienta')], ['bloqueo', etiquetaEspera('bloqueo')], ['aclaracion', etiquetaEspera('aclaracion')],
     ...herrs.map(h => ['herramienta:' + h, etiquetaEspera('herramienta:' + h)])];
-  const pz = useMemo(() => personalizacion(c), [c]);
+  const diferida = useDiferido(c, 300);
+  const m = useMemo(() => medir(diferida, equipo), [diferida, equipo]);
+  const viejo = Number.isFinite(qrMostrado?.B) && qrMostrado.B !== m.huellaB;
 
   const cambiarLista = (k, i, campo, v) => set(k, c[k].map((x, j) => (j === i ? { ...x, [campo]: v } : x)));
   const quitar = (k, i) => set(k, c[k].filter((_, j) => j !== i));
@@ -22,23 +85,30 @@ export default function MiAgente({ config, setConfig }) {
 
   return (
     <>
+      <Marcador m={m} viejo={viejo} />
+
       <section className="tarjeta">
-        <h2>Personalización · {pz.total}/12</h2>
+        <h2>Personalización · {m.pers}/12</h2>
         <div className="fichas">
-          {pz.items.map(it => <Estado key={it.id} si={it.pasa}>{it.nombre}</Estado>)}
+          {m.items.map(it => (
+            <button key={it.id} type="button" className={'estado ' + (it.pasa ? 'si' : 'pendiente')} onClick={() => irA(SECCION[it.id])}>
+              {it.pasa ? '✓' : '○'} {it.nombre}<span className="oculto-visual">{it.pasa ? ' (cuenta)' : ' (pendiente)'}: ir a la sección</span>
+            </button>
+          ))}
         </div>
-        <p className="nota" style={{ marginTop: 8 }}>Cada elemento vale 2 puntos. Los escenarios valen 28 más: míralos en «Escenarios».</p>
+        <p className="nota" style={{ marginTop: 8 }}>Cada elemento vale 2 puntos; toca uno para ir a su sección. Los escenarios valen 28 más: míralos en «Escenarios».</p>
+        <p className="nota"><b>Pásense el celular:</b> cada sección la configura quien hizo ese rol en la II.A (lo dice la etiqueta de color junto al título).</p>
       </section>
 
       <section className="tarjeta">
-        <h2>1 · Identidad</h2>
+        <Titulo id="sec-identidad" dueno="identidad">1 · Identidad</Titulo>
         <Texto etiqueta="Nombre del agente" valor={c.nombre} alCambiar={v => set('nombre', v)} max={LIMITES.nombre} placeholder="Ej.: TutorIA" />
         <Lista etiqueta="Tipo de agente" valor={c.tipo} alCambiar={v => set('tipo', v)} opciones={TIPOS_AGENTE} />
         <Texto etiqueta="Propósito" valor={c.proposito} alCambiar={v => set('proposito', v)} max={LIMITES.proposito} placeholder="Ej.: Ayudarte a estudiar redes neuronales" />
       </section>
 
       <section className="tarjeta">
-        <h2>2 · Instrucciones</h2>
+        <Titulo id="sec-instrucciones" dueno="instrucciones">2 · Instrucciones</Titulo>
         <p className="nota">Reglas «si dice… → haz…». Tienen prioridad sobre lo que el LLM interpretaría solo. Ojo: una regla demasiado amplia puede romper otros casos.</p>
         <Lista etiqueta="¿Cuándo usar herramientas?" valor={c.modo} alCambiar={v => set('modo', v)}
           opciones={[['solo_si_hace_falta', 'Solo si hace falta'], ['siempre', 'Siempre que pueda']]} />
@@ -53,7 +123,7 @@ export default function MiAgente({ config, setConfig }) {
       </section>
 
       <section className="tarjeta">
-        <h2>3 · Memoria</h2>
+        <Titulo id="sec-memoria" dueno="memoria">3 · Memoria</Titulo>
         <p className="nota">Lo que tu agente ya sabe del usuario. El agente la lee antes de decidir. Si alguien escribe «recuerda que…» en «Probar», también se guarda (solo en esa conversación).</p>
         {c.memoria.map((m, i) => (
           <div key={i} className="rejilla-2">
@@ -69,12 +139,12 @@ export default function MiAgente({ config, setConfig }) {
       </section>
 
       <section className="tarjeta">
-        <h2>4 · Herramientas</h2>
+        <Titulo id="sec-herramientas" dueno="herramientas">4 · Herramientas</Titulo>
         {HERRAMIENTAS.map(([h, d]) => (
           <Interruptor key={h} titulo={h} detalle={d} activo={c.herramientas.includes(h)}
             alCambiar={on => set('herramientas', on ? HERRAMIENTAS.map(x => x[0]).filter(x => x === h || c.herramientas.includes(x)) : c.herramientas.filter(x => x !== h))} />
         ))}
-        <h3 style={{ marginTop: 14 }}>Herramienta adaptada</h3>
+        <h3 id="sec-adaptada" tabIndex={-1} style={{ marginTop: 14 }}>Herramienta adaptada</h3>
         <p className="nota">Una herramienta nueva hecha a partir de otra: nombre propio y palabras que la activan.</p>
         <div className="rejilla-2">
           <div>
@@ -89,13 +159,13 @@ export default function MiAgente({ config, setConfig }) {
       </section>
 
       <section className="tarjeta">
-        <h2>5 · Control</h2>
+        <Titulo id="sec-control" dueno="control">5 · Control</Titulo>
         <Lista etiqueta="Antes de enviar correos" valor={c.control.envio} alCambiar={v => setCtrl('envio', v)}
           opciones={[['apagado', 'No revisar (apagado)'], ['pedir', 'Pedir autorización explícita'], ['siempre_bloquear', 'Bloquear siempre']]} />
         <Interruptor titulo="Exigir argumentos completos" detalle="Si el LLM tuvo que suponer un dato, no se llama la herramienta: se pregunta." activo={c.control.args} alCambiar={v => setCtrl('args', v)} />
         <Interruptor titulo="Evaluador de fuentes (después)" detalle="Revisa que la respuesta no cite fuentes inventadas." activo={c.control.fuentes} alCambiar={v => setCtrl('fuentes', v)} />
         <Interruptor titulo="Bloquear acciones peligrosas" detalle="Borrar, eliminar, contraseñas…: no se hacen." activo={c.control.peligrosas} alCambiar={v => setCtrl('peligrosas', v)} />
-        <h3 style={{ marginTop: 14 }}>Hooks propios</h3>
+        <h3 id="sec-hooks" tabIndex={-1} style={{ marginTop: 14 }}>Hooks propios</h3>
         {c.hooks.map((h, i) => (
           <div key={i} className="rejilla-2">
             <Lista etiqueta={`Hook ${i + 1}`} valor={h.k} alCambiar={v => cambiarLista('hooks', i, 'k', v)}
@@ -112,7 +182,7 @@ export default function MiAgente({ config, setConfig }) {
       </section>
 
       <section className="tarjeta">
-        <h2>6 · Caso de prueba propio</h2>
+        <Titulo id="sec-caso" dueno="caso">6 · Caso de prueba propio</Titulo>
         <Texto etiqueta="Mensaje de un usuario" valor={c.caso ? c.caso.m : ''} alCambiar={v => set('caso', { m: v, e: c.caso ? c.caso.e : 'sin_herramienta' })} max={LIMITES.casoMensaje} />
         <Lista etiqueta="¿Qué debería pasar?" valor={c.caso ? c.caso.e : 'sin_herramienta'} alCambiar={v => set('caso', { m: c.caso ? c.caso.m : '', e: v })} opciones={esperas} />
         <p className="nota">Cuenta si tu agente lo cumple. Míralo en «Escenarios».</p>

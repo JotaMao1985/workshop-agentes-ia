@@ -16,8 +16,8 @@ export default function Equipo({ equipo, setEquipo, ir }) {
         <p>Escribe el nombre de tu equipo. Es el mismo todo el día: con él se suman tus puntos.</p>
         <Texto etiqueta="Nombre del equipo" valor={equipo} alCambiar={setEquipo} max={30} placeholder="Ej.: Los Perceptrones" />
         <div className="fila">
-          <button className="boton" disabled={!equipo.trim()} onClick={() => ir('mi-agente')}>Ir a «Mi agente»</button>
-          <button className="boton secundario" disabled={!equipo.trim()} onClick={() => ir('registro')}>Ir al «Registro II.A»</button>
+          <button className="boton" disabled={!equipo.trim()} onClick={() => ir('registro')}>II.A · Registro</button>
+          <button className="boton" disabled={!equipo.trim()} onClick={() => ir('mi-agente')}>II.B · Mi agente</button>
         </div>
         <p className="nota">No te pedimos datos personales: usa datos ficticios (correos de ejemplo, nada real). Todo se guarda solo en este celular y viaja en el QR solo cuando entregas.</p>
       </section>

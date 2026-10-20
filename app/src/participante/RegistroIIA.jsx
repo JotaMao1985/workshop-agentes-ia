@@ -1,5 +1,7 @@
+import { useEffect, useRef, useState } from 'react';
 import { Texto, Lista } from '../componentes/Campos.jsx';
 import { FICHAS_FLUJO, HERRAMIENTAS_CASO, MEMORIA_CASO, CONTROL_CASO, ROLES, LIM_REG } from '../motor/registro.js';
+import { BLOQUE_FICHA } from '../etiquetas.js';
 
 const ETIQ = Object.fromEntries(FICHAS_FLUJO);
 
@@ -20,6 +22,26 @@ function Casillas({ titulo, opciones, valor, alCambiar }) {
 export default function RegistroIIA({ registro, setRegistro, equipo }) {
   const set = (k, v) => setRegistro({ ...registro, [k]: v });
   const flujo = registro.f || [];
+  const [anuncio, setAnuncio] = useState('');
+  const foco = useRef(null); // índice del paso que debe recibir el foco después de quitar uno
+  const pasos = useRef(null);
+  useEffect(() => {
+    if (foco.current === null || !pasos.current) return;
+    const bs = pasos.current.querySelectorAll('button.paso');
+    (bs[Math.min(foco.current, bs.length - 1)] || null)?.focus();
+    foco.current = null;
+  }, [flujo.length]);
+  const agregar = c => { set('f', [...flujo, c]); setAnuncio(`Paso ${flujo.length + 1} agregado: ${ETIQ[c]}.`); };
+  const quitarPaso = (i, enfocar = true) => {
+    if (enfocar && flujo.length > 1) foco.current = i;
+    set('f', flujo.filter((_, j) => j !== i));
+    setAnuncio(`Quitado el paso ${i + 1}: ${ETIQ[flujo[i]]}.`);
+  };
+  const vaciar = () => {
+    if (!window.confirm(`¿Vaciar el flujo? Se borran los ${flujo.length} pasos.`)) return;
+    set('f', []);
+    setAnuncio('Flujo vaciado.');
+  };
   return (
     <>
       <section className="tarjeta">
@@ -29,23 +51,24 @@ export default function RegistroIIA({ registro, setRegistro, equipo }) {
       </section>
       <section className="tarjeta">
         <h3>Flujo que siguieron</h3>
-        <p className="nota">Toquen las fichas en el orden en que pasaron (pueden repetir: el ciclo es un bucle).</p>
+        <p className="nota">Toquen las fichas en el orden en que pasaron (pueden repetir: el ciclo es un bucle). Para quitar un paso, tóquenlo.</p>
         <div className="fichas" style={{ marginBottom: 10 }}>
           {FICHAS_FLUJO.map(([c, t]) => (
-            <button key={c} type="button" className="ficha" disabled={flujo.length >= LIM_REG.f} onClick={() => set('f', [...flujo, c])}>+ {t}</button>
+            <button key={c} type="button" className={'ficha' + (BLOQUE_FICHA[c] ? '' : ' neutra')} data-b={BLOQUE_FICHA[c] || undefined} disabled={flujo.length >= LIM_REG.f} onClick={() => agregar(c)}>+ {t}</button>
           ))}
         </div>
-        <div className="secuencia" aria-live="polite">
+        <div className="secuencia" ref={pasos}>
           {flujo.length === 0 ? <span className="nota">Aún no hay pasos.</span> : flujo.map((c, i) => (
             <span key={i} className="fila" style={{ gap: 4 }}>
               {i > 0 ? <span className="flecha" aria-hidden="true">→</span> : null}
-              <span className="paso">{i + 1}. {ETIQ[c]}</span>
+              <button type="button" className="paso" data-b={BLOQUE_FICHA[c] || undefined} aria-label={`Quitar el paso ${i + 1}: ${ETIQ[c]}`} onClick={() => quitarPaso(i)}>{i + 1}. {ETIQ[c]}</button>
             </span>
           ))}
         </div>
+        <p className="oculto-visual" role="status">{anuncio}</p>
         <div className="fila" style={{ marginTop: 8 }}>
-          <button className="boton secundario mini" disabled={!flujo.length} onClick={() => set('f', flujo.slice(0, -1))}>Quitar el último</button>
-          <button className="boton secundario mini" disabled={!flujo.length} onClick={() => set('f', [])}>Vaciar</button>
+          <button className="boton secundario mini" disabled={!flujo.length} onClick={() => quitarPaso(flujo.length - 1, false)}>Quitar el último</button>
+          <button className="boton secundario mini" disabled={!flujo.length} onClick={vaciar}>Vaciar</button>
           <span className="nota">{flujo.length}/{LIM_REG.f} pasos</span>
         </div>
       </section>

@@ -17,3 +17,14 @@ export function usePersistente(clave, porDefecto) {
   useEffect(() => { guardar(clave, v); }, [clave, v]);
   return [v, setV];
 }
+
+// ¿Este navegador guarda de verdad? (modo privado, navegador interno de otra app, sitio bloqueado…)
+export function almacenDisponible() {
+  try {
+    const k = 'taller_prueba_almacen';
+    localStorage.setItem(k, '1');
+    const ok = localStorage.getItem(k) === '1';
+    localStorage.removeItem(k);
+    return ok;
+  } catch { return false; }
+}

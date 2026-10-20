@@ -1,14 +1,23 @@
 import { useState } from 'react';
 import { claveEquipo } from '../motor/marcador.js';
 import { FICHAS_FLUJO, HERRAMIENTAS_CASO, MEMORIA_CASO, CONTROL_CASO, ROLES } from '../motor/registro.js';
+import { rubricaCompleta } from '../vista/facilitador.js';
 
 const CRITERIOS = ['Intención identificada', 'Herramientas cuando correspondía', 'Evitó herramientas innecesarias', 'Control aplicado, incluido el imprevisto', 'Respuesta clara', 'Traza comprensible'];
 const nombres = lista => Object.fromEntries(lista);
 
 export default function IIA({ equipos, setEquipos }) {
   const lista = Object.values(equipos);
-  const [sel, setSel] = useState(lista.length ? claveEquipo(lista[0].nombre) : '');
+  const [selCrudo, setSel] = useState(lista.length ? claveEquipo(lista[0].nombre) : '');
+  // Si el equipo elegido ya no existe (o no había ninguno al abrir), se toma el primero.
+  const sel = Object.prototype.hasOwnProperty.call(equipos, selCrudo) ? selCrudo : (lista.length ? claveEquipo(lista[0].nombre) : '');
   const e = Object.prototype.hasOwnProperty.call(equipos, sel) ? equipos[sel] : null;
+  const calificadas = lista.filter(rubricaCompleta).length;
+  const siguiente = () => {
+    const ks = lista.map(x => claveEquipo(x.nombre));
+    setSel(ks[(ks.indexOf(sel) + 1) % ks.length]);
+    window.scrollTo(0, 0);
+  };
   const fijar = (i, v) => setEquipos(prev => (Object.prototype.hasOwnProperty.call(prev, sel) ? { ...prev, [sel]: { ...prev[sel], rubrica: prev[sel].rubrica.map((x, j) => (j === i ? v : x)) } } : prev));
   if (!lista.length) return <div className="tarjeta"><p>Primero importa los registros en «Importar».</p></div>;
   const reg = e && e.registro;
@@ -16,9 +25,13 @@ export default function IIA({ equipos, setEquipos }) {
   return (
     <>
       <section className="tarjeta">
-        <label className="campo"><span>Equipo</span>
+        <div className="fila" style={{ justifyContent: 'space-between' }}>
+          <b>Calificadas {calificadas}/{lista.length}</b>
+          <button className="boton secundario mini" onClick={siguiente} disabled={lista.length < 2}>Siguiente equipo →</button>
+        </div>
+        <label className="campo" style={{ marginTop: 8 }}><span>Equipo</span>
           <select value={sel} onChange={ev => setSel(ev.target.value)}>
-            {lista.map(x => <option key={claveEquipo(x.nombre)} value={claveEquipo(x.nombre)}>{x.nombre}{x.registro ? '' : ' (sin registro)'}</option>)}
+            {lista.map(x => <option key={claveEquipo(x.nombre)} value={claveEquipo(x.nombre)}>{rubricaCompleta(x) ? '✓ ' : ''}{x.nombre}{x.registro ? '' : ' (sin registro)'}</option>)}
           </select>
         </label>
       </section>
@@ -50,6 +63,7 @@ export default function IIA({ equipos, setEquipos }) {
                 </div>
               </div>
             ))}
+            <button className="boton" onClick={siguiente} disabled={lista.length < 2}>Siguiente equipo →</button>
           </section>
         </div>
       ) : null}

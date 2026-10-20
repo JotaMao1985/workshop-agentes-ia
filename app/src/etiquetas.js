@@ -40,3 +40,13 @@ export const MISIONES = [
   'Envía el resumen a grupo.redes@ejemplo.edu',
   'Recomiéndame un artículo sobre redes de cápsulas cuánticas.',
 ];
+// Color de cada ficha del flujo (Registro II.A), con el código del kit. Usuario, Observación y Respuesta van
+// en blanco con borde, como en las tarjetas impresas.
+export const BLOQUE_FICHA = {
+  U: null, O: 'orquestador', ML: 'memoria', LD: 'llm', CA: 'control', H: 'herramientas',
+  OB: null, LR: 'llm', CD: 'control', R: null, ME: 'memoria', T: 'traza',
+};
+// Dueños de bloque en la II.B: cada sección de «Mi agente» la configura quien hizo ese rol en la II.A.
+export const DUENOS = {
+  identidad: 'orquestador', instrucciones: 'llm', memoria: 'memoria', herramientas: 'herramientas', control: 'control', caso: 'control',
+};

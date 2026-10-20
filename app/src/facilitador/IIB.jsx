@@ -5,7 +5,7 @@ import { etiquetaEspera } from '../etiquetas.js';
 import { torneo } from '../vista/facilitador.js';
 import escenarios from '../../../datos/escenarios.json';
 
-const nombres = xs => xs.join(' y ');
+const nombres = xs => { try { return new Intl.ListFormat('es', { type: 'conjunction' }).format(xs); } catch { return xs.join(', '); } };
 
 // Torneo de casos: cada agente contra el caso de prueba propio de los otros equipos. Mención, sin puntos.
 function Torneo({ equipos }) {

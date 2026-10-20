@@ -58,8 +58,7 @@ function Marcador({ m, viejo }) {
       </div>
       {viejo ? <div className="viejo">Cambiaste tu agente después de mostrar el QR: si ya lo escanearon, vuelve a mostrarlo en <a href="#/entregar">«Entregar»</a>.</div> : null}
       <div className="barra-aviso" role="status" aria-live="polite" aria-atomic="true">
-        {avisos.slice(0, 2).map(a => <div key={a.texto} className={a.si ? 'si' : 'no'}>{a.texto}</div>)}
-        {avisos.length > 2 ? <div className="mas">y {avisos.length - 2} cambio{avisos.length - 2 > 1 ? 's' : ''} más: míralos en «Escenarios»</div> : null}
+        {avisos.length ? <div className={avisos[0].si ? 'si' : 'no'}>{avisos[0].texto}{avisos.length > 1 ? <span className="mas-n"> · y {avisos.length - 1} cambio{avisos.length > 2 ? 's' : ''} más</span> : null}</div> : null}
       </div>
     </div>
   );

@@ -23,9 +23,9 @@ function useMedidasCabecera(ref, clave) {
     if (!el) return undefined;
     const medir = () => {
       const fila = el.querySelector('.cabecera-fila');
-      const pliegue = fila ? fila.offsetHeight + (parseFloat(getComputedStyle(el).paddingTop) || 0) : 0;
+      const pliegue = fila ? Math.floor(fila.getBoundingClientRect().height + (parseFloat(getComputedStyle(el).paddingTop) || 0)) : 0;
       document.documentElement.style.setProperty('--pliegue', pliegue + 'px');
-      document.documentElement.style.setProperty('--alto-pegado', Math.max(0, el.offsetHeight - pliegue) + 'px');
+      document.documentElement.style.setProperty('--alto-pegado', Math.max(0, Math.ceil(el.getBoundingClientRect().height) - pliegue) + 'px');
     };
     medir();
     if (typeof ResizeObserver === 'undefined') { window.addEventListener('resize', medir); return () => window.removeEventListener('resize', medir); }

@@ -263,3 +263,5 @@ button.estado { border: 0; cursor: pointer; font: inherit; font-weight: 700; fon
 .barra-aviso .mas { background: var(--superficie); color: var(--tinta-2); border: 1px solid var(--borde); }
 h2[tabindex="-1"]:focus, h3[tabindex="-1"]:focus { outline: none; }
 h2[tabindex="-1"]:focus-visible, h3[tabindex="-1"]:focus-visible { outline: 2px solid var(--naranja); outline-offset: 2px; }
+.ficha:disabled { opacity: .5; cursor: not-allowed; }
+.barra-aviso .mas-n { font-weight: 600; opacity: .85; }

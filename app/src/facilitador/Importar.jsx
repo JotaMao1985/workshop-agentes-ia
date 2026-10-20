@@ -18,7 +18,7 @@ function useAudio() {
       const C = window.AudioContext || window.webkitAudioContext;
       if (!C) return;
       if (!ctx.current) ctx.current = new C();
-      if (ctx.current.state === 'suspended') ctx.current.resume();
+      if (ctx.current.state === 'suspended') ctx.current.resume().catch(() => { /* sin audio */ });
     } catch { /* sin audio */ }
   };
   const pitido = () => {
@@ -68,16 +68,17 @@ export default function Importar({ equipos, setEquipos }) {
         const k = claveEquipo(reg.equipo);
         const est = estadoImport(equipoDe(equiposRef.current, reg.equipo).registro, reg);
         setEquipos(prev => ({ ...prev, [k]: { ...equipoDe(prev, reg.equipo), registro: reg } }));
-        avisar({ ok: true, t: `Registro II.A de «${reg.equipo}» ${verbo[est]}.` });
+        avisar({ ok: true, igual: est === 'igual', t: `Registro II.A de «${reg.equipo}» ${verbo[est]}.` });
+        if (est !== 'igual') pitido();
       } else {
         const cfg = sanearConfig(datos);
         if (!cfg.equipo) throw new Error('La configuración no trae el nombre del equipo.');
         const k = claveEquipo(cfg.equipo);
         const est = estadoImport(equipoDe(equiposRef.current, cfg.equipo).config, cfg);
         setEquipos(prev => ({ ...prev, [k]: { ...equipoDe(prev, cfg.equipo), config: cfg } }));
-        avisar({ ok: true, t: `Agente II.B de «${cfg.equipo}» ${verbo[est]}: ${puntajeIIB(cfg).total}/40 con la evaluación.` });
+        avisar({ ok: true, igual: est === 'igual', t: `Agente II.B de «${cfg.equipo}» ${verbo[est]}: ${puntajeIIB(cfg).total}/40 con la evaluación.` });
+        if (est !== 'igual') pitido();
       }
-      pitido();
       return true;
     } catch (e) {
       avisar({ ok: false, t: 'No se pudo leer el código: ' + (e.message === 'formato' ? 'no es un código válido de esta app (¿quedó incompleto al copiarlo?).' : e.message) });
@@ -152,7 +153,7 @@ export default function Importar({ equipos, setEquipos }) {
   return (
     <>
       <div role="status" aria-live="polite">
-        {msg ? <div key={msg.n} className={(msg.ok ? 'exito-caja' : 'error-caja') + (msg.ok ? ' destello' : '')}>{msg.t}</div> : null}
+        {msg ? <div key={msg.n} className={(msg.ok ? 'exito-caja' : 'error-caja') + (msg.ok && !msg.igual ? ' destello' : '')}>{msg.t}</div> : null}
       </div>
       <section className="tarjeta">
         <h2>Escanear con la cámara</h2>
